@@ -4,14 +4,14 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseClass {
   static final DatabaseClass instance = DatabaseClass._init();
-  static Database? _database;
+  static Database _database;
   DatabaseClass._init();
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    if (_database != null) return _database;
 
     _database = await _initDB('cities.db');
-    return _database!;
+    return _database;
   }
 
   Future<Database> _initDB(String filePath) async {

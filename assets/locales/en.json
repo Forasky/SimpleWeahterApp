@@ -7,5 +7,13 @@
     "insert city" : "Insert city",
     "add" : "Add",
     "loading":"Loading...",
-    "temp":"Temperature: "
+    "temp":"Temperature: ",
+    "C°":"C°",
+    "F°":"F°",
+    "submit":"Submit",
+    "humidity":"Humidity: ",
+    "speedw":"Speed of wind: ",
+    "add city":"Add city",
+    "logout":"Logout",
+    "swchTh":"Switch theme"
 }

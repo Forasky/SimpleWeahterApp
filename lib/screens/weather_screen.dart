@@ -1,7 +1,9 @@
 import 'package:final_project/services/api_serv.dart';
+import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -25,143 +27,167 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return LocaleBuilder(
-        builder: (locale) => MaterialApp(
-              localizationsDelegates: Locales.delegates,
-              supportedLocales: Locales.supportedLocales,
-              locale: locale,
-              home: Center(
-                child: Scaffold(
-                  body: Column(
+    return MaterialApp(
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale('ru', 'RU'),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale.languageCode &&
+              supportedLocale.countryCode == locale.countryCode) {
+            return supportedLocale;
+          }
+        }
+        return supportedLocales.first;
+      },
+      home: Center(
+        child: Scaffold(
+          body: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height / 4,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.grey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        this.name != null
+                            ? AppLocalizations.of(context)
+                                .translate('now in' /* + '${this.name}'*/)
+                            : AppLocalizations.of(context)
+                                .translate('insert city'),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      this.temp != null
+                          ? AppLocalizations.of(context).translate('C°')
+                          : AppLocalizations.of(context).translate('loading'),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 46.0,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Text(
+                        this.currently != null
+                            ? "${this.currently}"
+                            : AppLocalizations.of(context).translate('loading'),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: TextField(
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: wrCity,
+                  ),
+                  controller: cityController,
+                ),
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.lightBlue)),
+                onPressed: () async {
+                  setState(() {
+                    wrCity = 'insert city';
+                  });
+                  results = await wt.getTemperature(cityController.text);
+                  getResult();
+                },
+                child: Text(AppLocalizations.of(context).translate('submit')),
+              ),
+              Expanded(
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Container(
+                      width: 100,
+                      color: Colors.red,
+                    ),
+                    Container(
+                      width: 100,
+                      color: Colors.green,
+                    ),
+                    Container(
+                      width: 100,
+                      color: Colors.black,
+                    ),
+                    Container(
+                      width: 100,
+                      color: Colors.orange,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: ListView(
                     children: [
-                      Container(
-                        height: MediaQuery.of(context).size.height / 4,
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.grey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: LocaleText(
-                                this.name != null
-                                    ? "now in"
-                                    //? "Сейчас в ${this.name}"
-                                    : "insert city",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            LocaleText(
-                              this.temp != null ? "${this.temp} C°" : "loading",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 46.0,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: LocaleText(
-                                this.currently != null
-                                    ? "${this.currently}"
-                                    : "loading",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.thermometer),
+                        title: Text(this.temp != null
+                            ? AppLocalizations.of(context).translate('temp')
+                            : AppLocalizations.of(context)
+                                .translate('loading')),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 15),
-                        child: TextField(
-                          obscureText: false,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: wrCity,
-                          ),
-                          controller: cityController,
-                        ),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.cloud),
+                        title: Text(this.description != null
+                            ? AppLocalizations.of(context).translate('weather')
+                            : AppLocalizations.of(context)
+                                .translate('loading')),
                       ),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.lightBlue)),
-                        onPressed: () async {
-                          setState(() {
-                            wrCity = LocaleText("insert city") as String;
-                          });
-                          results =
-                              await wt.getTemperature(cityController.text);
-                          getResult();
-                        },
-                        child: Text('Submit'),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.sun),
+                        title: Text(this.humidity != null
+                            ? AppLocalizations.of(context).translate('humidity')
+                            : AppLocalizations.of(context)
+                                .translate('loading')),
                       ),
-                      Expanded(
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            Container(
-                              width: 100,
-                              color: Colors.red,
-                            ),
-                            Container(
-                              width: 100,
-                              color: Colors.green,
-                            ),
-                            Container(
-                              width: 100,
-                              color: Colors.black,
-                            ),
-                            Container(
-                              width: 100,
-                              color: Colors.orange,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                          child: ListView(
-                            children: [
-                              ListTile(
-                                leading: FaIcon(FontAwesomeIcons.thermometer),
-                                title: Text(
-                                    " ${this.temp != null ? "${this.temp} C°" : "Загрузка..."}"),
-                              ),
-                              ListTile(
-                                leading: FaIcon(FontAwesomeIcons.cloud),
-                                title: Text(
-                                    "Погода: ${this.description != null ? "${this.description}" : "Загрузка..."}"),
-                              ),
-                              ListTile(
-                                leading: FaIcon(FontAwesomeIcons.sun),
-                                title: Text(
-                                    "Хрень какая-то: ${this.humidity != null ? "${this.humidity}" : "Загрузка..."}"),
-                              ),
-                              ListTile(
-                                leading: FaIcon(FontAwesomeIcons.wind),
-                                title: Text(
-                                    "Скорость воздуха: ${this.windSpeed != null ? "${this.windSpeed} м/с" : "Загрузка..."}"),
-                              ),
-                            ],
-                          ),
-                        ),
+                      ListTile(
+                        leading: FaIcon(FontAwesomeIcons.wind),
+                        title: Text(this.temp != null
+                            ? AppLocalizations.of(context).translate('speedw')
+                            : AppLocalizations.of(context)
+                                .translate('loading')),
                       ),
                     ],
                   ),
                 ),
               ),
-            ));
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   getResult() {

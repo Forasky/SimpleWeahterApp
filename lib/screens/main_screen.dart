@@ -1,18 +1,18 @@
 import 'package:final_project/screens/cities_screen.dart';
 import 'package:final_project/screens/settings_screen.dart';
 import 'package:final_project/screens/weather_screen.dart';
+import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-
-Locale? locale;
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return LocaleBuilder(builder: (locale) => AdminPage());
+    return AdminPage();
   }
 }
 
@@ -54,9 +54,24 @@ class _AdminPage extends State<AdminPage> with SingleTickerProviderStateMixin {
         final themeProvider =
             Provider.of<ThemeProvider>(context, listen: false);
         return MaterialApp(
-          localizationsDelegates: Locales.delegates,
-          supportedLocales: Locales.supportedLocales,
-          locale: locale,
+          supportedLocales: [
+            Locale('en', 'US'),
+            Locale('ru', 'RU'),
+          ],
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          localeResolutionCallback: (locale, supportedLocales) {
+            for (var supportedLocale in supportedLocales) {
+              if (supportedLocale.languageCode == locale.languageCode &&
+                  supportedLocale.countryCode == locale.countryCode) {
+                return supportedLocale;
+              }
+            }
+            return supportedLocales.first;
+          },
           themeMode: themeProvider.themeMode,
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,

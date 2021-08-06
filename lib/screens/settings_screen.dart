@@ -1,4 +1,5 @@
 import 'package:final_project/screens/signup.dart';
+import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -31,24 +32,6 @@ class ChngTepmButton extends StatelessWidget {
   }
 }
 
-class LangButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text("English"),
-          onTap: LocaleNotifier.of(context)!.change('en'),
-        ),
-        ListTile(
-          title: Text("Русский"),
-          onTap: LocaleNotifier.of(context)!.change('ru'),
-        ),
-      ],
-    );
-  }
-}
-
 class SettingScreen extends StatefulWidget {
   @override
   _SettingScreenState createState() => _SettingScreenState();
@@ -69,7 +52,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       width: 128, height: 128)),
             ),
             Text(
-              '${FirebaseAuth.instance.currentUser!.email}',
+              '${FirebaseAuth.instance.currentUser.email}',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
@@ -83,7 +66,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     MaterialPageRoute(builder: (context) => SignUp());
                   },
                   child: Text(
-                    'Logout',
+                    AppLocalizations.of(context).translate('logout'),
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.black87,
@@ -95,7 +78,7 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Expanded(
                 child: Row(
                   children: [
-                    Text('Переключатель темы))0)'),
+                    Text(AppLocalizations.of(context).translate('swchTh')),
                     ChangeButton(),
                   ],
                 ),

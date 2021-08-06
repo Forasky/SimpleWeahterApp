@@ -1,3 +1,5 @@
+import 'package:final_project/main.dart';
+
 final String tableCity = 'City';
 
 class CityFields {
@@ -9,16 +11,16 @@ class CityFields {
 }
 
 class City {
-  final int? id;
+  final int id;
   final String name;
   final int number;
-  final int? temp;
-  final String? weather;
+  final int temp;
+  final String weather;
 
   const City({
     this.id,
-    required this.name,
-    required this.number,
+    this.name,
+    this.number,
     this.temp,
     this.weather,
   });

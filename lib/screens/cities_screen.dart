@@ -1,4 +1,5 @@
 import 'package:final_project/services/api_serv.dart';
+import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/datdbase_class.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:final_project/tables/city.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 var name;
 var temp;
 var currently;
-late List<City> cities;
+List<City> cities;
 
 class CityScreen extends StatefulWidget {
   @override
@@ -118,7 +119,7 @@ class _AddCity extends State<AddCity> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  'Добавьте город',
+                  AppLocalizations.of(context).translate('add city'),
                   style: TextStyle(fontSize: 18),
                 ),
                 FaIcon(
@@ -136,7 +137,8 @@ class _AddCity extends State<AddCity> {
                   obscureText: false,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Введите название города',
+                    labelText: 'insert//'
+                    /*AppLocalizations.of(context).translate('insert city')*/,
                   ),
                   controller: cityController,
                 ),
@@ -149,7 +151,8 @@ class _AddCity extends State<AddCity> {
                         setState(() {});
                         Navigator.of(context).pop();
                       },
-                      child: Text('Добавить')),
+                      child: Text(
+                          AppLocalizations.of(context).translate('submit'))),
                 ],
               ),
             );
