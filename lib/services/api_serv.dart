@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Weather {
+class Wweather {
   TextEditingController cityController = TextEditingController();
   var name;
   var temp;
@@ -11,11 +11,11 @@ class Weather {
   var humidity;
   var windSpeed;
 
-  Future getTemperature(String city) async {
-    http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
-    var results = jsonDecode(responce.body);
-    return results;
+  // Future getTemperature(String city, String units) async {
+  //   http.Response responce = await http.get(Uri.parse(
+  //       'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=$units&lang=ru'));
+  //   var results = jsonDecode(responce.body);
+  //   return results;
 
     // {
     //   "coord":
@@ -67,5 +67,5 @@ class Weather {
     //   "name":"Минск",
     //   "cod":200
     //  }
-  }
+  //}
 }

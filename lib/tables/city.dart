@@ -1,5 +1,3 @@
-import 'package:final_project/main.dart';
-
 final String tableCity = 'City';
 
 class CityFields {

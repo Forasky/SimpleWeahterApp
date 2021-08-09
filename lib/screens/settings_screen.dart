@@ -3,7 +3,6 @@ import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 
 class ChangeButton extends StatelessWidget {
@@ -23,7 +22,7 @@ class ChngTepmButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tempProvider = Provider.of<TempProvider>(context);
-    return Switch.adaptive(
+    return Switch(
         value: tempProvider.isFarengeit,
         onChanged: (value) {
           final provider1 = Provider.of<TempProvider>(context, listen: false);
@@ -43,10 +42,10 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
       body: Container(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 80, 10, 20),
+              padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
               child: ClipOval(
                   child: Image.asset('assets/images/avatar.png',
                       width: 128, height: 128)),
@@ -80,6 +79,16 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     Text(AppLocalizations.of(context).translate('swchTh')),
                     ChangeButton(),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(15),
+              child: Expanded(
+                child: Row(
+                  children: [
+                    Text(AppLocalizations.of(context).translate('swchTemp')),
                   ],
                 ),
               ),

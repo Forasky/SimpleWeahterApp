@@ -1,11 +1,9 @@
 import 'package:final_project/services/api_serv.dart';
 import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/datdbase_class.dart';
-import 'package:final_project/services/themes.dart';
 import 'package:final_project/tables/city.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 var name;
 var temp;
@@ -103,7 +101,7 @@ class AddCity extends StatefulWidget {
 
 class _AddCity extends State<AddCity> {
   TextEditingController cityController = TextEditingController();
-  Weather wt = Weather();
+  Wweather wt = Wweather();
   var results;
 
   @override
@@ -145,7 +143,7 @@ class _AddCity extends State<AddCity> {
                 actions: [
                   TextButton(
                       onPressed: () async {
-                        results = await wt.getTemperature(cityController.text);
+                        //results = await wt.getTemperature(cityController.text,context.watch<TempProvider>().temp);
                         getResult();
                         insertCity();
                         setState(() {});

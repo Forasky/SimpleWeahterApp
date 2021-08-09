@@ -15,5 +15,6 @@
     "speedw":"Speed of wind: ",
     "add city":"Add city",
     "logout":"Logout",
-    "swchTh":"Switch theme"
+    "swchTh":"Switch theme",
+    "swchTemp":"Switch temp"
 }

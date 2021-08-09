@@ -6,7 +6,6 @@ import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_locales/flutter_locales.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MainScreen extends StatelessWidget {
