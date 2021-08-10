@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:final_project/services/api_serv.dart';
 import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/datdbase_class.dart';
 import 'package:final_project/tables/city.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 
 var name;
 var temp;
@@ -143,8 +146,7 @@ class _AddCity extends State<AddCity> {
                 actions: [
                   TextButton(
                       onPressed: () async {
-                        //results = await wt.getTemperature(cityController.text,context.watch<TempProvider>().temp);
-                        getResult();
+                        getTemperature().whenComplete(() => getResult());
                         insertCity();
                         setState(() {});
                         Navigator.of(context).pop();
@@ -177,5 +179,13 @@ class _AddCity extends State<AddCity> {
       number: cities.length + 1,
     );
     await DatabaseClass.instance.insert(add);
+  }
+
+  Future getTemperature() async {
+    http.Response responce = await http.get(Uri.parse(
+        'http://api.openweathermap.org/data/2.5/weather?q=${cityController.text}&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
+    results = jsonDecode(responce.body);
+    return print(
+        'http://api.openweathermap.org/data/2.5/weather?q=${cityController.text}&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru');
   }
 }

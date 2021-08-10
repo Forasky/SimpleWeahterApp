@@ -69,9 +69,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
           home: Center(
             child: Scaffold(
               appBar: AppBar(
+                backgroundColor: Colors.transparent,
                 leading: IconButton(
-                  icon: FaIcon(FontAwesomeIcons.locationArrow),
-                  onPressed: /*getGeoWeather()*/ () {},
+                  icon: FaIcon(FontAwesomeIcons.longArrowAltDown),
+                  onPressed: () {} /*getGeoWeather()*/,
                 ),
               ),
               body: Column(
@@ -337,14 +338,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   getGeoWeather() async {
     LocationCoordinates loc = LocationCoordinates();
-    await loc.checkPermision();
-    loc.getCurrentLocation();
-    double lat = loc.getLatitude();
-    double lon = loc.getLongitude();
+    double lat = 0;
+    double lon = 0;
+    loc.checkPermision();
+    loc.getCurrentLocation().whenComplete(
+        () => {lat = loc.getLatitude(), lon = loc.getLongitude()});
     http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
-    results == null ? print('pizda') : print('lol');
+        'http://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=29e75f209ad00e2d850bcaf376406c7b'));
+    print(
+        'http://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=29e75f209ad00e2d850bcaf376406c7b');
     results = jsonDecode(responce.body);
+    print(responce.body);
     getHourlyWeatherLocation(lat, lon);
     getResult();
   }

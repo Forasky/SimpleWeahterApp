@@ -29,10 +29,15 @@ class LocationCoordinates {
 
   Future getCurrentLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      _latitude = position.latitude;
-      _longitude = position.longitude;
+      Position position;
+      pushCoord() {
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      }
+
+      position = await Geolocator.getCurrentPosition(
+              desiredAccuracy: LocationAccuracy.low)
+          .whenComplete(() => pushCoord());
     } catch (e) {
       print(e);
     }

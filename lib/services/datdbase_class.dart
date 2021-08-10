@@ -18,15 +18,14 @@ class DatabaseClass {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(path, version: 2, onCreate: _createDB);
   }
 
   Future _createDB(Database db, int version) async {
     final idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
 
     await db.execute('''CREATE TABLE $tableCity (
-      ${CityFields.id} $idType, ${CityFields.name} TEXT NOT NULL, ${CityFields.number} INTEGER , ${CityFields.temp} INTEGER, ${CityFields.weather} TEXT
-    )''');
+      ${CityFields.id} $idType, ${CityFields.name} TEXT NOT NULL, ${CityFields.number} INTEGER)''');
   }
 
   Future close() async {
@@ -44,11 +43,9 @@ class DatabaseClass {
     final List<Map<String, dynamic>> maps = await db.query('City');
     return List.generate(maps.length, (i) {
       return City(
-        id: maps[i]['_id'],
+        id: maps[i]['uid'],
         name: maps[i]['Name of City'],
         number: maps[i]['number'],
-        temp: maps[i]['value of temp'],
-        weather: maps[i]['what weather'],
       );
     });
   }
@@ -56,14 +53,14 @@ class DatabaseClass {
   Future<void> updateCity(City city) async {
     final db = await database;
     await db.update(tableCity, city.Convert(),
-        where: '_id=?', whereArgs: [CityFields.id]);
+        where: 'uid=?', whereArgs: [CityFields.id]);
   }
 
   Future<void> deleteCity(int id) async {
     final db = await database;
     await db.delete(
       'City',
-      where: 'id = ?',
+      where: 'uid = ?',
       whereArgs: [id],
     );
   }
