@@ -1,6 +1,6 @@
 import 'package:final_project/screens/cities_screen.dart';
 import 'package:final_project/screens/settings_screen.dart';
-import 'package:final_project/screens/weather_screen.dart';
+import 'package:final_project/screens/weather1_screen.dart';
 import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';

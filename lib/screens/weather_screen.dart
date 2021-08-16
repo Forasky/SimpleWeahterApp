@@ -1,6 +1,11 @@
-import 'dart:convert';
+/*
+********************************************************************************
+This is first design of WeatherScreen, so i don't want to delete this.
+********************************************************************************
+*/
 
-import 'package:final_project/services/api_serv.dart';
+import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/location.dart';
 import 'package:final_project/services/themes.dart';
@@ -11,15 +16,12 @@ import 'package:provider/provider.dart';
 import 'package:weather/weather.dart';
 import 'package:http/http.dart' as http;
 
-class WeatherScreen extends StatefulWidget {
+class WeatherScreen_old extends StatefulWidget {
   @override
-  _WeatherScreenState createState() => _WeatherScreenState();
+  _WeatherScreenState_old createState() => _WeatherScreenState_old();
 }
 
-class _WeatherScreenState extends State<WeatherScreen> {
-  Wweather wt = Wweather();
-  WeatherFactory wf = new WeatherFactory("29e75f209ad00e2d850bcaf376406c7b",
-      language: Language.ENGLISH);
+class _WeatherScreenState_old extends State<WeatherScreen_old> {
   TextEditingController cityController = TextEditingController();
   var results;
   String wrCity = 'Введите город';
@@ -40,8 +42,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ListenableProvider<ThemeProvider>(create: (context) => ThemeProvider()),
-        ListenableProvider<TempProvider>(create: (context) => TempProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider(create: (context) => TempProvider()),
       ],
       child: Builder(
         builder: (context) => MaterialApp(
@@ -63,32 +65,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
             }
             return supportedLocales.first;
           },
-          themeMode: context.watch<ThemeProvider>().themeMode,
+          themeMode: Provider.of<ThemeProvider>(context).themeMode,
           theme: MyTheme.lightTheme,
           darkTheme: MyTheme.darkTheme,
           home: Center(
             child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                leading: IconButton(
-                  icon: FaIcon(FontAwesomeIcons.longArrowAltDown),
-                  onPressed: () {} /*getGeoWeather()*/,
-                ),
-              ),
               body: Column(
                 children: [
                   Container(
                     height: MediaQuery.of(context).size.height / 4,
                     width: MediaQuery.of(context).size.width,
-                    color: Colors.grey,
+                    color: Colors.white,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Padding(
                           padding: EdgeInsets.fromLTRB(5, 20, 5, 10),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 this.name != null
@@ -96,7 +90,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                         .translate('now in')
                                     : AppLocalizations.of(context)
                                         .translate('insert city'),
-                                style: TextStyle(
+                                style: GoogleFonts.josefinSans(
                                   color: Colors.white,
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
@@ -104,7 +98,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               ),
                               Text(
                                 this.name != null ? '  ${this.name}' : '',
-                                style: TextStyle(
+                                style: GoogleFonts.josefinSans(
                                   color: Colors.white,
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
@@ -118,7 +112,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               ? '${this.temp}'
                               : AppLocalizations.of(context)
                                   .translate('loading'),
-                          style: TextStyle(
+                          style: GoogleFonts.josefinSans(
                             color: Colors.black,
                             fontSize: 46.0,
                             fontWeight: FontWeight.w600,
@@ -131,7 +125,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 ? "${this.currently}"
                                 : AppLocalizations.of(context)
                                     .translate('loading'),
-                            style: TextStyle(
+                            style: GoogleFonts.josefinSans(
                               color: Colors.black,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -164,8 +158,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       await getHourlyWeather(cityController.text);
                       getResult();
                     },
-                    child:
-                        Text(AppLocalizations.of(context).translate('submit')),
+                    child: Text(
+                      AppLocalizations.of(context).translate('submit'),
+                      style: GoogleFonts.josefinSans(),
+                    ),
                   ),
                   Expanded(
                     flex: 0,
@@ -180,9 +176,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             leading: FaIcon(FontAwesomeIcons.thermometer),
                             title: Row(
                               children: [
-                                Text(AppLocalizations.of(context)
-                                    .translate('temp')),
-                                Text(results == null ? ' ' : '  ${this.temp}'),
+                                Text(
+                                  AppLocalizations.of(context)
+                                      .translate('temp'),
+                                  style: GoogleFonts.josefinSans(),
+                                ),
+                                Text(
+                                  results == null ? ' ' : '  ${this.temp}',
+                                  style: GoogleFonts.josefinSans(),
+                                ),
                               ],
                             ),
                           ),
@@ -190,11 +192,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             leading: FaIcon(FontAwesomeIcons.cloud),
                             title: Row(
                               children: [
-                                Text(AppLocalizations.of(context)
-                                    .translate('weather')),
-                                Text(results == null
-                                    ? ' '
-                                    : '  ${this.description}'),
+                                Text(
+                                  AppLocalizations.of(context)
+                                      .translate('weather'),
+                                  style: GoogleFonts.josefinSans(),
+                                ),
+                                Text(
+                                  results == null
+                                      ? ' '
+                                      : '  ${this.description}',
+                                  style: GoogleFonts.josefinSans(),
+                                ),
                               ],
                             ),
                           ),
@@ -202,11 +210,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             leading: FaIcon(FontAwesomeIcons.sun),
                             title: Row(
                               children: [
-                                Text(AppLocalizations.of(context)
-                                    .translate('humidity')),
-                                Text(results == null
-                                    ? ' '
-                                    : '  ${this.currently}'),
+                                Text(
+                                  AppLocalizations.of(context)
+                                      .translate('humidity'),
+                                  style: GoogleFonts.josefinSans(),
+                                ),
+                                Text(
+                                  results == null ? ' ' : '  ${this.currently}',
+                                  style: GoogleFonts.josefinSans(),
+                                ),
                               ],
                             ),
                           ),
@@ -214,11 +226,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             leading: FaIcon(FontAwesomeIcons.wind),
                             title: Row(
                               children: [
-                                Text(AppLocalizations.of(context)
-                                    .translate('speedw')),
-                                Text(results == null
-                                    ? ' '
-                                    : '  ${this.windSpeed}'),
+                                Text(
+                                  AppLocalizations.of(context)
+                                      .translate('speedw'),
+                                  style: GoogleFonts.josefinSans(),
+                                ),
+                                Text(
+                                  results == null ? ' ' : '  ${this.windSpeed}',
+                                  style: GoogleFonts.josefinSans(),
+                                ),
                               ],
                             ),
                           ),
@@ -284,7 +300,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(tempList[index].toInt().toString() + '°',
-                    style: TextStyle(color: Colors.black)),
+                    style: GoogleFonts.josefinSans(color: Colors.black)),
                 Container(
                   height: 50.0,
                   width: 50.0,
@@ -294,7 +310,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         scale: 2),
                   ),
                 ),
-                Text(dateList[index], style: TextStyle(color: Colors.black))
+                Text(dateList[index],
+                    style: GoogleFonts.josefinSans(color: Colors.black))
               ],
             ),
           );
@@ -307,17 +324,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
     String url = 'https://api.openweathermap.org/data/2.5/forecast?';
     url += 'q=$cityName&';
     url += 'appid=29e75f209ad00e2d850bcaf376406c7b&';
-    url += 'units=metric';
+    url += 'units=${Provider.of<TempProvider>(context, listen: false).temp}';
+    print(url);
     return url;
   }
 
   Future getTemperature() async {
     http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=${cityController.text}&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
+        'http://api.openweathermap.org/data/2.5/weather?q=${cityController.text}&appid=29e75f209ad00e2d850bcaf376406c7b&units=${Provider.of<TempProvider>(context, listen: false).temp}&lang=ru'));
     results = jsonDecode(responce.body);
   }
 
   getHourlyWeatherLocation(double lat, double lon) async {
+    //TODO add units for TempProvider
     String url =
         'https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru';
     http.Response responce = await http.get(Uri.parse(url));
@@ -337,6 +356,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   getGeoWeather() async {
+    //TODO add units for TempProvider
     LocationCoordinates loc = LocationCoordinates();
     double lat = 0;
     double lon = 0;

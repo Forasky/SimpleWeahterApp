@@ -1,8 +1,8 @@
 final String tableCity = 'City';
 
 class CityFields {
-  static final String id = 'uid';
-  static final String name = 'Name of City';
+  static final String id = '_id';
+  static final String name = 'Name';
   static final String number = 'number';
 }
 
@@ -17,16 +17,16 @@ class City {
     this.number,
   });
 
-  Map<String, dynamic> Convert() {
+  Map<String, dynamic> convert() {
     return {
-      'uid': id,
-      'Name of City': name,
-      'number': number,
+      CityFields.id: id,
+      CityFields.name: name,
+      CityFields.number: number,
     };
   }
 
   @override
   String toString() {
-    return 'City{uid: $id, Name of City: $name, number: $number}';
+    return 'City{${CityFields.id}: $id, ${CityFields.name}: $name, ${CityFields.number} $number}';
   }
 }

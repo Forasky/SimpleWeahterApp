@@ -22,7 +22,7 @@ class ChngTepmButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tempProvider = Provider.of<TempProvider>(context);
-    return Switch(
+    return Switch.adaptive(
         value: tempProvider.isFarengeit,
         onChanged: (value) {
           final provider1 = Provider.of<TempProvider>(context, listen: false);
@@ -39,61 +39,67 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
-              child: ClipOval(
-                  child: Image.asset('assets/images/avatar.png',
-                      width: 128, height: 128)),
-            ),
-            Text(
-              '${FirebaseAuth.instance.currentUser.email}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+    return MaterialApp(
+      themeMode: Provider.of<ThemeProvider>(context, listen: false).themeMode,
+      theme: MyTheme.lightTheme,
+      darkTheme: MyTheme.darkTheme,
+      home: Scaffold(
+        body: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
+                child: ClipOval(
+                    child: Image.asset('assets/images/avatar.png',
+                        width: 128, height: 128)),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: TextButton(
-                  onPressed: () {
-                    FirebaseAuth.instance.signOut();
-                    MaterialPageRoute(builder: (context) => SignUp());
-                  },
-                  child: Text(
-                    AppLocalizations.of(context).translate('logout'),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
-                  )),
-            ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Expanded(
-                child: Row(
-                  children: [
-                    Text(AppLocalizations.of(context).translate('swchTh')),
-                    ChangeButton(),
-                  ],
+              Text(
+                '${FirebaseAuth.instance.currentUser.email}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(15),
-              child: Expanded(
-                child: Row(
-                  children: [
-                    Text(AppLocalizations.of(context).translate('swchTemp')),
-                  ],
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: TextButton(
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      MaterialPageRoute(builder: (context) => SignUp());
+                    },
+                    child: Text(
+                      AppLocalizations.of(context).translate('logout'),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    )),
+              ),
+              Padding(
+                padding: EdgeInsets.all(15),
+                child: Expanded(
+                  child: Row(
+                    children: [
+                      Text(AppLocalizations.of(context).translate('swchTh')),
+                      ChangeButton(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.all(15),
+                child: Expanded(
+                  child: Row(
+                    children: [
+                      Text(AppLocalizations.of(context).translate('swchTemp')),
+                      ChngTepmButton(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
