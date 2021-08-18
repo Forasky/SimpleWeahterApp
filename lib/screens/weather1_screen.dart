@@ -96,6 +96,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           Center(
                             child: Text(
                               '${this.currently}',
+                              textAlign: TextAlign.center,
                               style: GoogleFonts.comfortaa(
                                   fontSize: 30,
                                   decoration: TextDecoration.none,
@@ -416,7 +417,7 @@ class LastUpdated extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Last updated on ${DateFormat.jm().add_yMd().format(this.lastupdated)}',
+            'Last updated on ${DateFormat.jm().format(this.lastupdated)}',
             style: GoogleFonts.comfortaa(
                 fontSize: 15,
                 decoration: TextDecoration.none,

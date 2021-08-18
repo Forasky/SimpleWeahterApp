@@ -5,8 +5,6 @@ class AuthenticationService {
 
   AuthenticationService(this._firebaseAuth);
 
-  //Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
-
   Future<String> signIn({String email, String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(

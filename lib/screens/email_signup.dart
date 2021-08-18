@@ -38,7 +38,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Enter User Name';
@@ -57,7 +56,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Enter an Email Address';
@@ -78,7 +76,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Enter Age';
@@ -98,7 +95,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  // The validator receives the text that the user has entered.
                   validator: (value) {
                     if (value.isEmpty) {
                       return 'Enter Password';
