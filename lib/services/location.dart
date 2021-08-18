@@ -1,4 +1,7 @@
-import 'package:geolocator/geolocator.dart';
+//********************* */
+// IS NOT WORKING
+//********************* */
+/*import 'package:geolocator/geolocator.dart';
 
 class LocationCoordinates {
   double _latitude;
@@ -50,4 +53,4 @@ class LocationCoordinates {
   double getLongitude() {
     return _longitude;
   }
-}
+}*/

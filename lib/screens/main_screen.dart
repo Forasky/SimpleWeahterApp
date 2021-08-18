@@ -16,13 +16,16 @@ class MainScreen extends StatelessWidget {
 }
 
 class AdminPage extends StatefulWidget {
+  final VoidCallback indexSelected;
+  const AdminPage({Key key, this.indexSelected}) : super(key: key);
   @override
-  _AdminPage createState() => _AdminPage();
+  AdminPageState createState() => AdminPageState();
 }
 
-class _AdminPage extends State<AdminPage> with SingleTickerProviderStateMixin {
+class AdminPageState extends State<AdminPage>
+    with SingleTickerProviderStateMixin {
   TextEditingController cityController = TextEditingController();
-  int currentIndex = 0; //индекс выбранной нижней вкладки
+  int currentIndex = 0;
 
   @override
   void initState() {
@@ -46,59 +49,69 @@ class _AdminPage extends State<AdminPage> with SingleTickerProviderStateMixin {
     ),
   ];
 
+  setPage(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
       builder: (context, _) {
-        final themeProvider =
-            Provider.of<ThemeProvider>(context, listen: false);
-        return MaterialApp(
-          supportedLocales: [
-            Locale('en', 'US'),
-            Locale('ru', 'RU'),
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (context) => ThemeProvider()),
           ],
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-          ],
-          localeResolutionCallback: (locale, supportedLocales) {
-            for (var supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode &&
-                  supportedLocale.countryCode == locale.countryCode) {
-                return supportedLocale;
+          child: MaterialApp(
+            supportedLocales: [
+              Locale('en', 'US'),
+              Locale('ru', 'RU'),
+            ],
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            localeResolutionCallback: (locale, supportedLocales) {
+              for (var supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale.languageCode &&
+                    supportedLocale.countryCode == locale.countryCode) {
+                  return supportedLocale;
+                }
               }
-            }
-            return supportedLocales.first;
-          },
-          themeMode: themeProvider.themeMode,
-          theme: MyTheme.lightTheme,
-          darkTheme: MyTheme.darkTheme,
-          home: Scaffold(
-            body: IndexedStack(
-              index: currentIndex,
-              children: tabs,
-            ),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) => setState(() => currentIndex = index),
-              items: [
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.cloud),
-                  label: 'weather',
-                  backgroundColor: Colors.blueAccent,
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.city),
-                  label: 'city',
-                  backgroundColor: Colors.grey,
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.cogs),
-                  label: 'settings',
-                  backgroundColor: Colors.redAccent,
-                ),
-              ],
+              return supportedLocales.first;
+            },
+            themeMode:
+                Provider.of<ThemeProvider>(context, listen: false).themeMode,
+            theme: MyTheme.lightTheme,
+            darkTheme: MyTheme.darkTheme,
+            home: Scaffold(
+              body: IndexedStack(
+                index: currentIndex,
+                children: tabs,
+              ),
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: currentIndex,
+                onTap: (index) => setPage(index),
+                items: [
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.cloud),
+                    label: 'weather',
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.city),
+                    label: 'city',
+                    backgroundColor: Colors.grey,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.cogs),
+                    label: 'settings',
+                    backgroundColor: Colors.redAccent,
+                  ),
+                ],
+              ),
             ),
           ),
         );

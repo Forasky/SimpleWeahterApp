@@ -1,6 +1,7 @@
 import 'package:final_project/screens/main_screen.dart';
 import 'package:final_project/screens/signup.dart';
 import 'package:final_project/services/app_localizations.dart';
+import 'package:final_project/services/google_signin.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => TempProvider()),
-        Provider(create: (context) => AppDatebase()),
+        Provider(create: (context) => AppDatebase().taskDao),
+        ChangeNotifierProvider(create: (context) => Authentication()),
       ],
       child: MaterialApp(
         supportedLocales: [

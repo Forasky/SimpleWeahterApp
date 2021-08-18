@@ -2,17 +2,17 @@ import 'dart:convert';
 import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
-import 'package:final_project/tables/city.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:moor/moor.dart' hide Column;
 import 'package:provider/provider.dart';
 
 var name;
 var temp;
 var currently;
-List<City> cities;
 
 class CityScreen extends StatefulWidget {
   @override
@@ -31,10 +31,10 @@ class _CityScreenState extends State<CityScreen> {
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => TempProvider()),
-        Provider(create: (context) => AppDatebase()),
+        Provider(create: (context) => AppDatebase().taskDao),
       ],
       child: MaterialApp(
-        themeMode: Provider.of<ThemeProvider>(context, listen: false).themeMode,
+        themeMode: Provider.of<ThemeProvider>(context).themeMode,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
         home: Column(
@@ -48,22 +48,22 @@ class _CityScreenState extends State<CityScreen> {
   }
 
   StreamBuilder<List<Task>> _buildTaskList(BuildContext context) {
-    final database = Provider.of<AppDatebase>(context, listen: false);
+    final dao = Provider.of<TaskDao>(context, listen: false);
     return StreamBuilder(
-        stream: database.watchAllTasks(),
+        stream: dao.watchAllTasks(),
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
+          // ignore: deprecated_member_use
           final tasks = snapshot.data ?? List();
-
           return ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (_, index) {
                 final itemTask = tasks[index];
-                return _buildListItem(itemTask, database);
+                return _buildListItem(itemTask, dao);
               });
         });
   }
 
-  Widget _buildListItem(Task itemTask, AppDatebase database) {
+  Widget _buildListItem(Task itemTask, TaskDao dao) {
     return Slidable(
         actionPane: SlidableDrawerActionPane(),
         secondaryActions: <Widget>[
@@ -71,71 +71,22 @@ class _CityScreenState extends State<CityScreen> {
             caption: 'Delete',
             color: Colors.red,
             icon: Icons.delete,
-            onTap: () => database.deleteTask(itemTask),
+            onTap: () => dao.deleteTask(itemTask),
           )
         ],
         child: TextButton(
           onPressed: () {},
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [Text(itemTask.name.toString()), Text('33 0')],
+            children: [
+              Text(itemTask.name.toString(),
+                  style:
+                      GoogleFonts.comfortaa(fontSize: 28, color: Colors.black)),
+            ],
           ),
         ));
   }
 }
-
-// class CityWidget extends StatefulWidget {
-//   @override
-//   _CityWidgetState createState() => _CityWidgetState();
-// }
-
-// class _CityWidgetState extends State<CityWidget> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return LimitedBox(
-//       maxWidth: MediaQuery.of(context).size.width,
-//       maxHeight: 110,
-//       child: Scaffold(
-//         body: Container(
-//           height: 110,
-//           margin: EdgeInsets.all(10),
-//           decoration: BoxDecoration(
-//             borderRadius: BorderRadius.circular(12),
-//             image: DecorationImage(
-//               image: AssetImage('assets/images/rain.gif'),
-//               fit: BoxFit.fill,
-//             ),
-//           ),
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Padding(
-//                 padding: const EdgeInsets.only(left: 20),
-//                 child: Text(
-//                   '${cities[0].name}',
-//                   style: TextStyle(
-//                     fontSize: 30,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.only(right: 20),
-//                 child: Text(
-//                   '33 С0',
-//                   style: TextStyle(
-//                     fontSize: 40,
-//                     color: Colors.white,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class AddCity extends StatefulWidget {
   @override
@@ -150,7 +101,7 @@ class _AddCity extends State<AddCity> {
   Widget build(BuildContext context) {
     return LimitedBox(
       maxWidth: MediaQuery.of(context).size.width,
-      maxHeight: 110,
+      maxHeight: 150,
       child: Container(
         padding: EdgeInsets.all(10),
         child: TextButton(
@@ -187,10 +138,12 @@ class _AddCity extends State<AddCity> {
                 actions: [
                   TextButton(
                       onPressed: () async {
-                        final database =
-                            Provider.of<AppDatebase>(context, listen: false);
-                        final task = Task(name: cityController.text);
-                        database.insertTask(task);
+                        getTemperature(cityController.text);
+                        final dao =
+                            Provider.of<TaskDao>(context, listen: false);
+                        final task =
+                            TasksCompanion(name: Value(cityController.text));
+                        dao.insertTask(task);
                         cityController.clear();
                         Navigator.of(context).pop();
                       },
@@ -205,21 +158,12 @@ class _AddCity extends State<AddCity> {
     );
   }
 
-  getResult() {
-    setState(() {
-      try {
-        name = results['name'];
-        temp = results['main']['temp'];
-        currently = results['weather'][0]['main'];
-      } on Exception catch (_) {}
-    });
-  }
-
-  Future getTemperature() async {
+  Future getTemperature(String city) async {
     http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=${cityController.text}&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
+        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=${Provider.of<TempProvider>(context, listen: false).temp}&lang=ru'));
     results = jsonDecode(responce.body);
-    return print(
-        'http://api.openweathermap.org/data/2.5/weather?q=${cityController.text}&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru');
+    setState(() {
+      temp = results['main']['temp'];
+    });
   }
 }

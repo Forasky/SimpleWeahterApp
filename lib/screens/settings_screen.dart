@@ -40,7 +40,7 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: Provider.of<ThemeProvider>(context, listen: false).themeMode,
+      themeMode: Provider.of<ThemeProvider>(context).themeMode,
       theme: MyTheme.lightTheme,
       darkTheme: MyTheme.darkTheme,
       home: Scaffold(
@@ -51,8 +51,21 @@ class _SettingScreenState extends State<SettingScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
                 child: ClipOval(
-                    child: Image.asset('assets/images/avatar.png',
-                        width: 128, height: 128)),
+                    child: FirebaseAuth.instance.currentUser.displayName != null
+                        ? Image(
+                            image: NetworkImage(
+                                FirebaseAuth.instance.currentUser.photoURL))
+                        : Image.asset('assets/images/avatar.png',
+                            width: 128, height: 128)),
+              ),
+              Text(
+                FirebaseAuth.instance.currentUser.displayName != null
+                    ? '${FirebaseAuth.instance.currentUser.displayName}'
+                    : '',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
               Text(
                 '${FirebaseAuth.instance.currentUser.email}',
