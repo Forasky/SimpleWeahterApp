@@ -76,15 +76,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           onRefresh: name != null ? () => getTemperature(name) : () {},
           child: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                stops: [0, 1.0],
-                colors: [
-                  Colors.deepOrange[400],
-                  Colors.blueGrey,
-                ],
-              ),
+              gradient: getColor(),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -157,6 +149,84 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ],
       ),
     );
+  }
+
+  // ignore: missing_return
+  LinearGradient getColor() {
+    if (currently != null) {
+      if (isDayTime != null && isDayTime == true) {
+        switch (currently) {
+          case 'ясно':
+          case 'небольшая облачность':
+          case 'облачно с прояснениями':
+            return LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [
+                  0,
+                  1.0
+                ],
+                colors: [
+                  Colors.deepOrange[50],
+                  Colors.amber,
+                ]);
+            break;
+          case 'пасмурно':
+          case 'дождь':
+          case 'туман':
+          case 'облачно':
+            return LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [
+                  0,
+                  1.0
+                ],
+                colors: [
+                  Colors.indigo[200],
+                  Colors.blueAccent[700],
+                ]);
+            break;
+          default:
+            return LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                stops: [
+                  0,
+                  1.0
+                ],
+                colors: [
+                  Colors.deepOrange[200],
+                  Colors.blueGrey[300],
+                ]);
+            break;
+        }
+      } else if (isDayTime != null && isDayTime == false) {
+        return LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [
+              0,
+              1.0
+            ],
+            colors: [
+              Colors.grey[300],
+              Colors.brown[600],
+            ]);
+      }
+    } else {
+      return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [
+            0,
+            1.0
+          ],
+          colors: [
+            Colors.deepPurple[200],
+            Colors.blueGrey[300],
+          ]);
+    }
   }
 
   Container buildHourlyWeather() {
