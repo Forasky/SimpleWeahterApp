@@ -1,12 +1,11 @@
 import 'package:final_project/screens/cities_screen.dart';
+import 'package:final_project/screens/search_screen.dart';
 import 'package:final_project/screens/settings_screen.dart';
 import 'package:final_project/screens/weather1_screen.dart';
-import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MainScreen extends StatelessWidget {
   @override
@@ -16,8 +15,8 @@ class MainScreen extends StatelessWidget {
 }
 
 class AdminPage extends StatefulWidget {
-  final VoidCallback indexSelected;
-  const AdminPage({Key key, this.indexSelected}) : super(key: key);
+  final VoidCallback? indexSelected;
+  const AdminPage({Key? key, this.indexSelected}) : super(key: key);
   @override
   AdminPageState createState() => AdminPageState();
 }
@@ -45,8 +44,11 @@ class AdminPageState extends State<AdminPage>
       child: CityScreen(),
     ),
     Center(
-      child: SettingScreen(),
+      child: SearchScreen(),
     ),
+    Center(
+      child: SettingScreen(),
+    )
   ];
 
   setPage(int index) {
@@ -64,24 +66,6 @@ class AdminPageState extends State<AdminPage>
             ChangeNotifierProvider(create: (context) => ThemeProvider()),
           ],
           child: MaterialApp(
-            supportedLocales: [
-              Locale('en', 'US'),
-              Locale('ru', 'RU'),
-            ],
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-            ],
-            localeResolutionCallback: (locale, supportedLocales) {
-              for (var supportedLocale in supportedLocales) {
-                if (supportedLocale.languageCode == locale.languageCode &&
-                    supportedLocale.countryCode == locale.countryCode) {
-                  return supportedLocale;
-                }
-              }
-              return supportedLocales.first;
-            },
             themeMode:
                 Provider.of<ThemeProvider>(context, listen: false).themeMode,
             theme: MyTheme.lightTheme,
@@ -106,10 +90,14 @@ class AdminPageState extends State<AdminPage>
                     backgroundColor: Colors.grey,
                   ),
                   BottomNavigationBarItem(
+                      icon: FaIcon(FontAwesomeIcons.search),
+                      label: 'search',
+                      backgroundColor: Colors.purple),
+                  BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.cogs),
                     label: 'settings',
                     backgroundColor: Colors.redAccent,
-                  ),
+                  )
                 ],
               ),
             ),

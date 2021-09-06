@@ -35,7 +35,7 @@ class _EmailLogInState extends State<EmailLogIn> {
                   ),
                   // The validator receives the text that the user has entered.
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return 'Enter Email Address';
                     } else if (!value.contains('@')) {
                       return 'Please enter a valid email address!';
@@ -57,7 +57,7 @@ class _EmailLogInState extends State<EmailLogIn> {
                   ),
                   // The validator receives the text that the user has entered.
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return 'Enter Password';
                     } else if (value.length < 6) {
                       return 'Password must be atleast 6 characters!';
@@ -75,7 +75,7 @@ class _EmailLogInState extends State<EmailLogIn> {
                             backgroundColor: MaterialStateProperty.all<Color>(
                                 Colors.lightBlue)),
                         onPressed: () {
-                          if (_formKey.currentState.validate()) {
+                          if (_formKey.currentState!.validate()) {
                             setState(() {
                               isLoading = true;
                             });

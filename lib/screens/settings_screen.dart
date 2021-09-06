@@ -1,5 +1,4 @@
 import 'package:final_project/screens/signup.dart';
-import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,68 +47,96 @@ class _SettingScreenState extends State<SettingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
-                child: ClipOval(
-                    child: FirebaseAuth.instance.currentUser.displayName != null
-                        ? Image(
-                            image: NetworkImage(
-                                FirebaseAuth.instance.currentUser.photoURL))
-                        : Image.asset('assets/images/avatar.png',
-                            width: 128, height: 128)),
-              ),
-              Text(
-                FirebaseAuth.instance.currentUser.displayName != null
-                    ? '${FirebaseAuth.instance.currentUser.displayName}'
-                    : '',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
+              Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [
+                        0,
+                        1.0
+                      ],
+                      colors: [
+                        Colors.green,
+                        Colors.blueGrey,
+                      ]),
                 ),
-              ),
-              Text(
-                '${FirebaseAuth.instance.currentUser.email}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: TextButton(
-                    onPressed: () {
-                      FirebaseAuth.instance.signOut();
-                      MaterialPageRoute(builder: (context) => SignUp());
-                    },
-                    child: Text(
-                      AppLocalizations.of(context).translate('logout'),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 50, 10, 20),
+                      child: ClipOval(
+                          child: Image.asset('assets/images/avatar.png',
+                              width: 128, height: 128)),
+                    ),
+                    Text(
+                      FirebaseAuth.instance.currentUser!.displayName != null
+                          ? '${FirebaseAuth.instance.currentUser!.displayName}'
+                          : '',
                       style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.black87,
+                        fontSize: 14,
+                        color: Colors.black,
                       ),
-                    )),
+                    ),
+                    Text(
+                      '${FirebaseAuth.instance.currentUser!.email}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: TextButton(
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                            MaterialPageRoute(builder: (context) => SignUp());
+                          },
+                          child: Text(
+                            'Logout',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                          )),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 4,
+                color: Colors.grey,
               ),
               Padding(
                 padding: EdgeInsets.all(15),
                 child: Expanded(
                   child: Row(
                     children: [
-                      Text(AppLocalizations.of(context).translate('swchTh')),
+                      Text('Switch Theme'),
                       ChangeButton(),
                     ],
                   ),
                 ),
               ),
+              Divider(
+                height: 4,
+                color: Colors.grey,
+              ),
               Padding(
                 padding: EdgeInsets.all(15),
                 child: Expanded(
                   child: Row(
                     children: [
-                      Text(AppLocalizations.of(context).translate('swchTemp')),
+                      Text('Switch Temp'),
                       ChngTepmButton(),
                     ],
                   ),
                 ),
+              ),
+              Divider(
+                height: 4,
+                color: Colors.grey,
               ),
             ],
           ),

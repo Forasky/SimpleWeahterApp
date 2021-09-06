@@ -10,37 +10,34 @@ part of 'moor_database.dart';
 class Task extends DataClass implements Insertable<Task> {
   final int id;
   final String name;
-  Task({@required this.id, @required this.name});
+  Task({required this.id, required this.name});
   factory Task.fromData(Map<String, dynamic> data, GeneratedDatabase db,
-      {String prefix}) {
+      {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Task(
-      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      id: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
+          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
     );
   }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (!nullToAbsent || id != null) {
-      map['id'] = Variable<int>(id);
-    }
-    if (!nullToAbsent || name != null) {
-      map['name'] = Variable<String>(name);
-    }
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
     return map;
   }
 
   TasksCompanion toCompanion(bool nullToAbsent) {
     return TasksCompanion(
-      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      id: Value(id),
+      name: Value(name),
     );
   }
 
   factory Task.fromJson(Map<String, dynamic> json,
-      {ValueSerializer serializer}) {
+      {ValueSerializer? serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Task(
       id: serializer.fromJson<int>(json['id']),
@@ -48,7 +45,7 @@ class Task extends DataClass implements Insertable<Task> {
     );
   }
   @override
-  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
@@ -56,7 +53,7 @@ class Task extends DataClass implements Insertable<Task> {
     };
   }
 
-  Task copyWith({int id, String name}) => Task(
+  Task copyWith({int? id, String? name}) => Task(
         id: id ?? this.id,
         name: name ?? this.name,
       );
@@ -86,11 +83,11 @@ class TasksCompanion extends UpdateCompanion<Task> {
   });
   TasksCompanion.insert({
     this.id = const Value.absent(),
-    @required String name,
+    required String name,
   }) : name = Value(name);
   static Insertable<Task> custom({
-    Expression<int> id,
-    Expression<String> name,
+    Expression<int>? id,
+    Expression<String>? name,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -98,7 +95,7 @@ class TasksCompanion extends UpdateCompanion<Task> {
     });
   }
 
-  TasksCompanion copyWith({Value<int> id, Value<String> name}) {
+  TasksCompanion copyWith({Value<int>? id, Value<String>? name}) {
     return TasksCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -129,23 +126,19 @@ class TasksCompanion extends UpdateCompanion<Task> {
 
 class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   final GeneratedDatabase _db;
-  final String _alias;
+  final String? _alias;
   $TasksTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  GeneratedColumn<int> _id;
-  @override
-  GeneratedColumn<int> get id =>
-      _id ??= GeneratedColumn<int>('id', aliasedName, false,
-          typeName: 'INTEGER',
-          requiredDuringInsert: false,
-          defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
+  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+      'id', aliasedName, false,
+      typeName: 'INTEGER',
+      requiredDuringInsert: false,
+      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  GeneratedColumn<String> _name;
-  @override
-  GeneratedColumn<String> get name => _name ??= GeneratedColumn<String>(
+  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 15),
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 32),
       typeName: 'TEXT',
       requiredDuringInsert: true);
   @override
@@ -160,11 +153,11 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('name')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name'], _nameMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
@@ -174,7 +167,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Task map(Map<String, dynamic> data, {String tablePrefix}) {
+  Task map(Map<String, dynamic> data, {String? tablePrefix}) {
     return Task.fromData(data, _db,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
@@ -187,10 +180,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
 
 abstract class _$AppDatebase extends GeneratedDatabase {
   _$AppDatebase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
-  $TasksTable _tasks;
-  $TasksTable get tasks => _tasks ??= $TasksTable(this);
-  TaskDao _taskDao;
-  TaskDao get taskDao => _taskDao ??= TaskDao(this as AppDatebase);
+  late final $TasksTable tasks = $TasksTable(this);
+  late final TaskDao taskDao = TaskDao(this as AppDatebase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override

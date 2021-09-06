@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
@@ -52,8 +51,7 @@ class _CityScreenState extends State<CityScreen> {
     return StreamBuilder(
         stream: dao.watchAllTasks(),
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
-          // ignore: deprecated_member_use
-          final tasks = snapshot.data ?? List();
+          final tasks = snapshot.data ?? [];
           return ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (_, index) {
@@ -110,9 +108,7 @@ class _AddCity extends State<AddCity> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  ''
-                  //AppLocalizations.of(context).translate('add city'),
-                  ,
+                  'Add city',
                   style: TextStyle(fontSize: 18),
                 ),
                 FaIcon(
@@ -130,25 +126,23 @@ class _AddCity extends State<AddCity> {
                   obscureText: false,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'insert//'
-                    /*AppLocalizations.of(context).translate('insert city')*/,
+                    labelText: 'insert city',
                   ),
                   controller: cityController,
                 ),
                 actions: [
                   TextButton(
-                      onPressed: () async {
-                        getTemperature(cityController.text);
-                        final dao =
-                            Provider.of<TaskDao>(context, listen: false);
-                        final task =
-                            TasksCompanion(name: Value(cityController.text));
-                        dao.insertTask(task);
-                        cityController.clear();
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                          AppLocalizations.of(context).translate('submit'))),
+                    onPressed: () async {
+                      getTemperature(cityController.text);
+                      final dao = Provider.of<TaskDao>(context, listen: false);
+                      final task =
+                          TasksCompanion(name: Value(cityController.text));
+                      dao.insertTask(task);
+                      cityController.clear();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('submit'),
+                  ),
                 ],
               ),
             );

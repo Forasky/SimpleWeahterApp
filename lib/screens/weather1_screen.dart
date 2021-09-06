@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:final_project/services/app_localizations.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -31,8 +29,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   var sunrise;
   var sunshine;
   var time;
-  String textFor;
-  bool isDayTime;
+  late String textFor;
+  late bool isDayTime;
   List tempList = [];
   List<String> iconList = [];
   List<String> dateList = [];
@@ -46,81 +44,64 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ChangeNotifierProvider(create: (context) => TempProvider()),
       ],
       child: MaterialApp(
-        color: Colors.grey,
-        debugShowCheckedModeBanner: false,
-        supportedLocales: [
-          Locale('en', 'US'),
-          Locale('ru', 'RU'),
-        ],
-        localizationsDelegates: [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        localeResolutionCallback: (locale, supportedLocales) {
-          for (var supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale.languageCode &&
-                supportedLocale.countryCode == locale.countryCode) {
-              return supportedLocale;
-            }
-          }
-          return supportedLocales.first;
-        },
         themeMode: Provider.of<ThemeProvider>(context).themeMode,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
-        home: RefreshIndicator(
-          color: Colors.transparent,
-          backgroundColor: Colors.transparent,
-          // ignore: missing_return
-          onRefresh: name != null ? () => getTemperature(name) : () {},
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: getColor(),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  searchBar(),
-                  if (results != null)
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      child: ListView(
-                        children: [
-                          CityView(city: name, latitude: lat, longitude: lon),
-                          TempShow(
-                            temp: temp,
-                            idIcon: icon,
-                            textFor: textFor,
+        home: results != null
+            ? RefreshIndicator(
+                color: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                onRefresh: () => getTemperature(name),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: getColor(),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                          child: ListView(
+                            children: [
+                              CityView(
+                                  city: name, latitude: lat, longitude: lon),
+                              TempShow(
+                                temp: temp,
+                                idIcon: icon,
+                                textFor: textFor,
+                              ),
+                              Center(
+                                child: Text(
+                                  '${this.currently}',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.comfortaa(
+                                      fontSize: 30,
+                                      decoration: TextDecoration.none,
+                                      color: Colors.black),
+                                ),
+                              ),
+                              buildHourlyWeather(),
+                              LastUpdated(
+                                lastupdated: lastupdate,
+                              ),
+                            ],
                           ),
-                          Center(
-                            child: Text(
-                              '${this.currently}',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.comfortaa(
-                                  fontSize: 30,
-                                  decoration: TextDecoration.none,
-                                  color: Colors.black),
-                            ),
-                          ),
-                          buildHourlyWeather(),
-                          LastUpdated(
-                            lastupdated: lastupdate,
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    Text('insert city',
-                        style: GoogleFonts.comfortaa(
-                            fontSize: 20,
-                            decoration: TextDecoration.none,
-                            color: Colors.black))
-                ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            : Container(
+                decoration: BoxDecoration(gradient: getColor()),
+                child: Center(
+                  child: Text('Choose city',
+                      style: GoogleFonts.comfortaa(
+                          fontSize: 20,
+                          decoration: TextDecoration.none,
+                          color: Colors.black)),
+                ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -152,7 +133,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
     );
   }
 
-  // ignore: missing_return
   LinearGradient getColor() {
     if (currently != null) {
       if (isDayTime != null && isDayTime == true) {
@@ -168,10 +148,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   1.0
                 ],
                 colors: [
-                  Colors.deepOrange[50],
+                  Colors.deepOrange,
                   Colors.amber,
                 ]);
-            break;
           case 'пасмурно':
           case 'дождь':
           case 'туман':
@@ -184,10 +163,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   1.0
                 ],
                 colors: [
-                  Colors.indigo[200],
-                  Colors.blueAccent[700],
+                  Colors.indigo,
+                  Colors.blueAccent,
                 ]);
-            break;
           default:
             return LinearGradient(
                 begin: Alignment.topLeft,
@@ -197,10 +175,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   1.0
                 ],
                 colors: [
-                  Colors.deepOrange[200],
-                  Colors.blueGrey[300],
+                  Colors.deepOrange,
+                  Colors.blueGrey,
                 ]);
-            break;
         }
       } else if (isDayTime != null && isDayTime == false) {
         return LinearGradient(
@@ -211,8 +188,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
               1.0
             ],
             colors: [
-              Colors.grey[300],
-              Colors.brown[600],
+              Colors.grey,
+              Colors.brown,
             ]);
       }
     } else {
@@ -224,10 +201,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
             1.0
           ],
           colors: [
-            Colors.deepPurple[200],
-            Colors.blueGrey[300],
+            Colors.deepPurple,
+            Colors.blueGrey,
           ]);
     }
+    return LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        stops: [
+          0,
+          1.0
+        ],
+        colors: [
+          Colors.green,
+          Colors.blueGrey,
+        ]);
   }
 
   Container buildHourlyWeather() {
@@ -342,7 +330,11 @@ class CityView extends StatelessWidget {
   final String city;
   final double longitude;
   final double latitude;
-  const CityView({Key key, this.city, this.latitude, this.longitude})
+  const CityView(
+      {Key? key,
+      required this.city,
+      required this.latitude,
+      required this.longitude})
       : super(key: key);
 
   @override
@@ -379,7 +371,11 @@ class TempShow extends StatelessWidget {
   final double temp;
   final String idIcon;
   final String textFor;
-  const TempShow({Key key, this.temp, this.idIcon, this.textFor})
+  const TempShow(
+      {Key? key,
+      required this.temp,
+      required this.idIcon,
+      required this.textFor})
       : super(key: key);
 
   @override
@@ -408,7 +404,7 @@ class TempShow extends StatelessWidget {
 
 class LastUpdated extends StatelessWidget {
   final DateTime lastupdated;
-  const LastUpdated({Key key, this.lastupdated}) : super(key: key);
+  const LastUpdated({Key? key, required this.lastupdated}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
