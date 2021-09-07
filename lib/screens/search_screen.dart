@@ -1,5 +1,6 @@
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -22,9 +23,15 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  void getText() async {
+    final text = await rootBundle.loadString('assets/cities/cities.list.json');
+    return print(text);
+  }
+
   @override
   void initState() {
     _foundUsers = _items;
+    getText();
     super.initState();
   }
 
