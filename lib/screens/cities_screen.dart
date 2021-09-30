@@ -51,10 +51,17 @@ class _CityScreenState extends State<CityScreen> {
     return StreamBuilder(
         stream: dao.watchAllTasks(),
         builder: (context, AsyncSnapshot<List<Task>> snapshot) {
-          final tasks = snapshot.data ?? [];
+          print(snapshot);
+          if (!snapshot.hasData) {
+            return Align(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            );
+          }
+          final tasks = snapshot.data;
           return ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (_, index) {
+              itemCount: tasks!.length,
+              itemBuilder: (context, index) {
                 final itemTask = tasks[index];
                 return _buildListItem(itemTask, dao);
               });

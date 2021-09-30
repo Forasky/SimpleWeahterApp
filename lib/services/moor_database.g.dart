@@ -137,10 +137,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 32),
-      typeName: 'TEXT',
-      requiredDuringInsert: true);
+      typeName: 'TEXT', requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, name];
   @override

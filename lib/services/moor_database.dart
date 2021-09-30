@@ -5,7 +5,7 @@ part 'moor_database.g.dart';
 
 class Tasks extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text().withLength(min: 1, max: 32)();
+  TextColumn get name => text()();
 }
 
 @UseMoor(tables: [Tasks], daos: [TaskDao])
@@ -14,8 +14,7 @@ class AppDatebase extends _$AppDatebase {
       : super(FlutterQueryExecutor.inDatabaseFolder(
             path: 'db.sqlite', logStatements: true));
 
-  @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 }
 
 @UseDao(tables: [Tasks])

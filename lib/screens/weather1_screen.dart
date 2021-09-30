@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class WeatherScreen extends StatefulWidget {
+  final String cityName;
+  WeatherScreen({required this.cityName, Key? key}) : super(key: key);
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
 }
@@ -16,7 +18,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
   TextEditingController cityController = TextEditingController();
   var results;
 
-  var name;
   var temp;
   var description;
   var currently;
@@ -37,6 +38,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
   String weatherIconUrl = 'http://openweathermap.org/img/wn/';
 
   @override
+  void initState() {
+    super.initState();
+    getTemperature(widget.cityName);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -51,7 +58,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
             ? RefreshIndicator(
                 color: Colors.transparent,
                 backgroundColor: Colors.transparent,
-                onRefresh: () => getTemperature(name),
+                onRefresh: () => getTemperature(widget.cityName),
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: getColor(),
@@ -64,7 +71,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           child: ListView(
                             children: [
                               CityView(
-                                  city: name, latitude: lat, longitude: lon),
+                                  city: widget.cityName,
+                                  latitude: lat,
+                                  longitude: lon),
                               TempShow(
                                 temp: temp,
                                 idIcon: icon,
@@ -271,7 +280,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
       this.lon = results['coord']['lon'];
       this.icon = results['weather'][0]['icon'];
       this.currently = results['weather'][0]['description'];
-      this.name = results['name'];
       this.humidity = results['main']['humidity'];
       this.temp = results['main']['temp'];
       this.windSpeed = results['wind']['speed'];
@@ -323,6 +331,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     else
       textFor = 'F';
     getResult();
+    getHourlyWeather(city);
   }
 }
 

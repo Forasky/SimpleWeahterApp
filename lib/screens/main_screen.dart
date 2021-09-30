@@ -15,8 +15,6 @@ class MainScreen extends StatelessWidget {
 }
 
 class AdminPage extends StatefulWidget {
-  final VoidCallback? indexSelected;
-  const AdminPage({Key? key, this.indexSelected}) : super(key: key);
   @override
   AdminPageState createState() => AdminPageState();
 }
@@ -25,6 +23,7 @@ class AdminPageState extends State<AdminPage>
     with SingleTickerProviderStateMixin {
   TextEditingController cityController = TextEditingController();
   int currentIndex = 0;
+  String ciName = 'Minsk';
 
   @override
   void initState() {
@@ -36,24 +35,26 @@ class AdminPageState extends State<AdminPage>
     super.dispose();
   }
 
-  final tabs = [
-    Center(
-      child: WeatherScreen(),
-    ),
-    Center(
-      child: CityScreen(),
-    ),
-    Center(
-      child: SearchScreen(),
-    ),
-    Center(
-      child: SettingScreen(),
-    )
-  ];
-
   setPage(int index) {
     setState(() {
       currentIndex = index;
+    });
+  }
+
+  Widget getPage(int index) {
+    if (index == 0)
+      return WeatherScreen(
+        cityName: ciName,
+      );
+    if (index == 1) return CityScreen();
+    if (index == 2) return SearchScreen(onCityTab: navigateToHome);
+    return SettingScreen();
+  }
+
+  void navigateToHome(String city) {
+    setState(() {
+      ciName = city;
+      currentIndex = 0;
     });
   }
 
@@ -71,10 +72,7 @@ class AdminPageState extends State<AdminPage>
             theme: MyTheme.lightTheme,
             darkTheme: MyTheme.darkTheme,
             home: Scaffold(
-              body: IndexedStack(
-                index: currentIndex,
-                children: tabs,
-              ),
+              body: getPage(currentIndex),
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: currentIndex,
                 onTap: (index) => setPage(index),
