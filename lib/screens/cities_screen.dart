@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,9 @@ var temp;
 var currently;
 
 class CityScreen extends StatefulWidget {
+  final ValueChanged<String> onCityTab;
+  CityScreen({required this.onCityTab, Key? key}) : super(key: key);
+
   @override
   _CityScreenState createState() => _CityScreenState();
 }
@@ -33,6 +37,9 @@ class _CityScreenState extends State<CityScreen> {
         Provider(create: (context) => AppDatebase().taskDao),
       ],
       child: MaterialApp(
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         themeMode: Provider.of<ThemeProvider>(context).themeMode,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
@@ -50,7 +57,7 @@ class _CityScreenState extends State<CityScreen> {
     final dao = Provider.of<TaskDao>(context, listen: false);
     return StreamBuilder(
         stream: dao.watchAllTasks(),
-        builder: (context, AsyncSnapshot<List<Task>> snapshot) {
+        builder: (context, snapshot) {
           print(snapshot);
           if (!snapshot.hasData) {
             return Align(
@@ -73,14 +80,14 @@ class _CityScreenState extends State<CityScreen> {
         actionPane: SlidableDrawerActionPane(),
         secondaryActions: <Widget>[
           IconSlideAction(
-            caption: 'Delete',
+            caption: 'delete'.tr(),
             color: Colors.red,
             icon: Icons.delete,
             onTap: () => dao.deleteTask(itemTask),
           )
         ],
         child: TextButton(
-          onPressed: () {},
+          onPressed: () => {widget.onCityTab(itemTask.name.toString())},
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -101,6 +108,7 @@ class AddCity extends StatefulWidget {
 class _AddCity extends State<AddCity> {
   TextEditingController cityController = TextEditingController();
   var results;
+  String message = "";
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +123,7 @@ class _AddCity extends State<AddCity> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  'Add city',
+                  'add'.tr(),
                   style: TextStyle(fontSize: 18),
                 ),
                 FaIcon(
@@ -126,6 +134,7 @@ class _AddCity extends State<AddCity> {
             ),
           ),
           onPressed: () {
+            //updateMessage("");
             showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
@@ -133,22 +142,27 @@ class _AddCity extends State<AddCity> {
                   obscureText: false,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'insert city',
+                    labelText: 'insert city'.tr(),
                   ),
                   controller: cityController,
                 ),
                 actions: [
+                  Text(
+                    message,
+                    style: GoogleFonts.comfortaa(
+                        fontSize: 12, color: Colors.redAccent),
+                  ),
                   TextButton(
-                    onPressed: () async {
-                      getTemperature(cityController.text);
+                    onPressed: () {
                       final dao = Provider.of<TaskDao>(context, listen: false);
                       final task =
                           TasksCompanion(name: Value(cityController.text));
-                      dao.insertTask(task);
-                      cityController.clear();
-                      Navigator.of(context).pop();
+                      checkName(cityController.text).then((value) =>
+                          value == true
+                              ? dao.insertTask(task)
+                              : cityController.clear());
                     },
-                    child: Text('submit'),
+                    child: Text('submit').tr(),
                   ),
                 ],
               ),
@@ -159,12 +173,25 @@ class _AddCity extends State<AddCity> {
     );
   }
 
-  Future getTemperature(String city) async {
+  Future checkName(String city) async {
+    final dao = Provider.of<TaskDao>(context, listen: false);
+    var data = dao.watchAllTasks();
+
     http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=${Provider.of<TempProvider>(context, listen: false).temp}&lang=ru'));
+        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
     results = jsonDecode(responce.body);
+    if (results['cod'] == "404" || results['cod'] == "400") {
+      updateMessage("city not found");
+      return false;
+    } else {
+      updateMessage("city was added");
+      return true;
+    }
+  }
+
+  updateMessage(String msg) {
     setState(() {
-      temp = results['main']['temp'];
+      message = msg;
     });
   }
 }

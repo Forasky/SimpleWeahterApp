@@ -1,3 +1,4 @@
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/screens/cities_screen.dart';
 import 'package:final_project/screens/search_screen.dart';
 import 'package:final_project/screens/settings_screen.dart';
@@ -46,7 +47,7 @@ class AdminPageState extends State<AdminPage>
       return WeatherScreen(
         cityName: ciName,
       );
-    if (index == 1) return CityScreen();
+    if (index == 1) return CityScreen(onCityTab: navigateToHome);
     if (index == 2) return SearchScreen(onCityTab: navigateToHome);
     return SettingScreen();
   }
@@ -67,6 +68,9 @@ class AdminPageState extends State<AdminPage>
             ChangeNotifierProvider(create: (context) => ThemeProvider()),
           ],
           child: MaterialApp(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
             themeMode:
                 Provider.of<ThemeProvider>(context, listen: false).themeMode,
             theme: MyTheme.lightTheme,
@@ -79,21 +83,21 @@ class AdminPageState extends State<AdminPage>
                 items: [
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.cloud),
-                    label: 'weather',
+                    label: 'weather'.tr(),
                     backgroundColor: Colors.blueAccent,
                   ),
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.city),
-                    label: 'city',
+                    label: 'city'.tr(),
                     backgroundColor: Colors.grey,
                   ),
                   BottomNavigationBarItem(
                       icon: FaIcon(FontAwesomeIcons.search),
-                      label: 'search',
+                      label: 'search'.tr(),
                       backgroundColor: Colors.purple),
                   BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.cogs),
-                    label: 'settings',
+                    label: 'settings'.tr(),
                     backgroundColor: Colors.redAccent,
                   )
                 ],

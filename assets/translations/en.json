@@ -1,11 +1,13 @@
 {
     "welcome screen" : "all weather in your pocket",
     "weather" : "Weather",
+    "choose city" : "Choose city",
     "city" : "Cities",
+    "search" : "Search",
     "settings":"Settings",
     "now in" : "Now in",
     "insert city" : "Insert city",
-    "add" : "Add",
+    "add" : "Add city",
     "loading":"Loading...",
     "temp":"Temperature: ",
     "C°":"C°",
@@ -16,5 +18,10 @@
     "add city":"Add city",
     "logout":"Logout",
     "swchTh":"Switch theme",
-    "swchTemp":"Switch temp"
+    "swchTemp":"Switch temp",
+    "last updated" : "Last updated in {}",
+    "delete":"Delete",
+    "enter city":"Enter City",
+    "no data found":"no cities found",
+    "uncorrect city":"Uncorrect name of city"
 }

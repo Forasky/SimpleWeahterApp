@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:final_project/screens/main_screen.dart';
 import 'package:final_project/screens/signup.dart';
 import 'package:final_project/services/google_signin.dart';
@@ -12,7 +13,12 @@ import 'package:firebase_core/firebase_core.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  await EasyLocalization.ensureInitialized();
+  runApp(EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('ru')],
+      path: 'assets/translations',
+      fallbackLocale: Locale('en'),
+      child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -26,6 +32,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => Authentication()),
       ],
       child: MaterialApp(
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.grey,
@@ -43,7 +52,7 @@ class IntroScreen extends StatelessWidget {
     return SplashScreen(
         useLoader: true,
         loadingTextPadding: EdgeInsets.all(0),
-        loadingText: Text('welcome screen'),
+        loadingText: Text('welcome screen').tr(),
         navigateAfterSeconds: result != null ? MainScreen() : SignUp(),
         seconds: 5,
         title: Text('CloudApp'),

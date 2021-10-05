@@ -1,15 +1,17 @@
 import 'dart:convert';
 
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/screens/main_screen.dart';
+import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
 
 List<dynamic> _items = [];
 List<dynamic> _foundUsers = [];
-List<dynamic> _namedItems = [];
 
 class SearchScreen extends StatefulWidget {
   final ValueChanged<String> onCityTab;
@@ -59,6 +61,9 @@ class _SearchScreenState extends State<SearchScreen> {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
       ],
       child: MaterialApp(
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         themeMode: Provider.of<ThemeProvider>(context).themeMode,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
@@ -72,8 +77,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     width: 350,
                     child: TextField(
                       onChanged: (value) => textChanged(value),
-                      decoration:
-                          InputDecoration.collapsed(hintText: "Enter City"),
+                      decoration: InputDecoration.collapsed(
+                          hintText: 'enter city'.tr()),
                     )),
               ),
             ],
@@ -90,6 +95,13 @@ class _SearchScreenState extends State<SearchScreen> {
                         return TextButton(
                             onPressed: () =>
                                 {widget.onCityTab(_foundUsers[index]["name"])},
+                            onLongPress: () {
+                              final dao =
+                                  Provider.of<TaskDao>(context, listen: false);
+                              final task = TasksCompanion(
+                                  name: Value(_foundUsers[index]["name"]));
+                              dao.insertTask(task);
+                            },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
@@ -109,7 +121,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     )
                   : Align(
                       alignment: Alignment.center,
-                      child: Text('No data found'),
+                      child: Text('no data found').tr(),
                     ),
         ),
       ),

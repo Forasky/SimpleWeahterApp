@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ChangeNotifierProvider(create: (context) => TempProvider()),
       ],
       child: MaterialApp(
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
         themeMode: Provider.of<ThemeProvider>(context).themeMode,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
@@ -104,40 +108,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
             : Container(
                 decoration: BoxDecoration(gradient: getColor()),
                 child: Center(
-                  child: Text('Choose city',
+                  child: Text('choose city'.tr(),
                       style: GoogleFonts.comfortaa(
                           fontSize: 20,
                           decoration: TextDecoration.none,
                           color: Colors.black)),
                 ),
               ),
-      ),
-    );
-  }
-
-  searchBar() {
-    return Container(
-      padding: EdgeInsets.only(top: 40),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(3)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          IconButton(
-              onPressed: () {
-                getTemperature(cityController.text);
-                getHourlyWeather(cityController.text);
-              },
-              icon: FaIcon(FontAwesomeIcons.search)),
-          SizedBox(
-              width: 300,
-              child: TextField(
-                controller: cityController,
-                decoration: InputDecoration.collapsed(hintText: "Enter City"),
-              ))
-        ],
       ),
     );
   }
@@ -311,6 +288,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
       date = date.substring(11, 16);
       dateList.add(date);
     }
+    getResult();
   }
 
   String _getUrlCity(String cityName) {
@@ -330,7 +308,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
       textFor = 'C';
     else
       textFor = 'F';
-    getResult();
     getHourlyWeather(city);
   }
 }
@@ -422,7 +399,7 @@ class LastUpdated extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Last updated on ${DateFormat.jm().format(this.lastupdated)}',
+            'last updated'.tr(args: [DateFormat.jm().format(this.lastupdated)]),
             style: GoogleFonts.comfortaa(
                 fontSize: 15,
                 decoration: TextDecoration.none,

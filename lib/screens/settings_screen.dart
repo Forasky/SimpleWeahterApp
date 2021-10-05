@@ -1,3 +1,4 @@
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/screens/signup.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,6 +40,9 @@ class _SettingScreenState extends State<SettingScreen> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       themeMode: Provider.of<ThemeProvider>(context).themeMode,
       theme: MyTheme.lightTheme,
       darkTheme: MyTheme.darkTheme,
@@ -94,12 +98,12 @@ class _SettingScreenState extends State<SettingScreen> {
                             MaterialPageRoute(builder: (context) => SignUp());
                           },
                           child: Text(
-                            'Logout',
+                            'logout',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.black87,
                             ),
-                          )),
+                          ).tr()),
                     ),
                   ],
                 ),
@@ -113,7 +117,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 child: Expanded(
                   child: Row(
                     children: [
-                      Text('Switch Theme'),
+                      Text('swchTh').tr(),
                       ChangeButton(),
                     ],
                   ),
@@ -128,7 +132,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 child: Expanded(
                   child: Row(
                     children: [
-                      Text('Switch Temp'),
+                      Text('swchTemp').tr(),
                       ChngTepmButton(),
                     ],
                   ),
