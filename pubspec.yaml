@@ -54,6 +54,8 @@ dependencies:
   path: ^1.8.0
   moor_flutter: ^4.0.0
   easy_localization: ^3.0.0
+  flutter_bloc: ^7.1.0
+  get_it: ^7.2.0
 
 
 dev_dependencies:

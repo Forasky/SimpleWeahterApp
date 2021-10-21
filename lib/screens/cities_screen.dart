@@ -1,4 +1,5 @@
 import 'dart:convert';
+// ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
@@ -32,15 +33,13 @@ class _CityScreenState extends State<CityScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => TempProvider()),
         Provider(create: (context) => AppDatebase().taskDao),
       ],
       child: MaterialApp(
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        themeMode: Provider.of<ThemeProvider>(context).themeMode,
+        themeMode: context.watch<ThemeCubit>().state.theme,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
         home: Column(
@@ -93,7 +92,7 @@ class _CityScreenState extends State<CityScreen> {
             children: [
               Text(itemTask.name.toString(),
                   style:
-                      GoogleFonts.comfortaa(fontSize: 28, color: Colors.black)),
+                      GoogleFonts.comfortaa(fontSize: 28,)),
             ],
           ),
         ));
@@ -106,9 +105,6 @@ class AddCity extends StatefulWidget {
 }
 
 class _AddCity extends State<AddCity> {
-  TextEditingController cityController = TextEditingController();
-  var results;
-  String message = "";
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +133,21 @@ class _AddCity extends State<AddCity> {
             //updateMessage("");
             showDialog(
               context: context,
-              builder: (BuildContext context) => AlertDialog(
+              builder: (BuildContext context) => PopUp());})));}
+}
+
+class PopUp extends StatefulWidget {
+  @override
+  _PopUpState createState() => _PopUpState();
+}
+
+class _PopUpState extends State<PopUp> {
+  TextEditingController cityController = TextEditingController();
+  String message = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
                 content: TextField(
                   obscureText: false,
                   decoration: InputDecoration(
@@ -165,18 +175,11 @@ class _AddCity extends State<AddCity> {
                     child: Text('submit').tr(),
                   ),
                 ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
+              );
   }
 
   Future checkName(String city) async {
-    final dao = Provider.of<TaskDao>(context, listen: false);
-    var data = dao.watchAllTasks();
-
+    var results;
     http.Response responce = await http.get(Uri.parse(
         'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
     results = jsonDecode(responce.body);

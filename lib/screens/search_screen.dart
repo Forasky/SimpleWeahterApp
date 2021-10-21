@@ -1,11 +1,11 @@
 import 'dart:convert';
-
+// ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
-import 'package:final_project/screens/main_screen.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -58,13 +58,13 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        BlocProvider<ThemeCubit>(create: (BuildContext context) => ThemeCubit(),),
       ],
       child: MaterialApp(
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-        themeMode: Provider.of<ThemeProvider>(context).themeMode,
+        themeMode: context.watch<ThemeCubit>().state.theme,
         theme: MyTheme.lightTheme,
         darkTheme: MyTheme.darkTheme,
         home: Scaffold(
@@ -109,12 +109,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                     style: GoogleFonts.comfortaa(
                                         fontSize: 16,
                                         decoration: TextDecoration.none,
-                                        color: Colors.black)),
+                                        )),
                                 Text(_foundUsers[index]["country"],
                                     style: GoogleFonts.comfortaa(
                                         fontSize: 16,
                                         decoration: TextDecoration.none,
-                                        color: Colors.black)),
+                                        )),
                               ],
                             ));
                       },
