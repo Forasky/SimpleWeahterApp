@@ -34,11 +34,12 @@ class _ChngTepmButtonState extends State<ChngTepmButton> {
     return BlocBuilder<TempBloc, TempState>(
       builder: (context, state) {
         return Switch.adaptive(
-            value: GetIt.instance.get<TempState>().wasImperial,
+            value: GetIt.instance.get<TempBloc>().state.wasImperial,
             onChanged: (value) {
               value == true
-                  ? context.read<TempBloc>().changeFarengeit()
-                  : context.read<TempBloc>().changeMetric();
+                  ? GetIt.instance.get<TempBloc>().changeFarengeit()
+                  : GetIt.instance.get<TempBloc>().changeMetric();
+                  setState(() {});
               print(context.read<TempBloc>().state.temp);
             });
       },

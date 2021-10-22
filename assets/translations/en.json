@@ -23,5 +23,6 @@
     "delete":"Delete",
     "enter city":"Enter City",
     "no data found":"no cities found",
-    "uncorrect city":"Uncorrect name of city"
+    "uncorrect city":"Uncorrect name of city",
+    "wait":"Wait, please..."
 }

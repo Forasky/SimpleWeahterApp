@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,75 +53,92 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ThemeCubit>(create: (BuildContext context) => ThemeCubit(),),
-        BlocProvider<TempBloc>(create: (BuildContext context) => TempBloc(),),
+        BlocProvider<ThemeCubit>(
+          create: (BuildContext context) => ThemeCubit(),
+        ),
+        BlocProvider<TempBloc>(
+          create: (BuildContext context) => TempBloc(),
+        ),
       ],
       child: MaterialApp(
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          themeMode: context.watch<ThemeCubit>().state.theme,
-          theme: MyTheme.lightTheme,
-          darkTheme: MyTheme.darkTheme,
-          home: results != null
-              ? RefreshIndicator(
-                  color: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  onRefresh: () => getTemperature(widget.cityName),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: getColor(),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height,
-                            child: ListView(
-                              children: [
-                                CityView(
-                                    city: widget.cityName,
-                                    latitude: lat,
-                                    longitude: lon),
-                                TempShow(
-                                  temp: temp,
-                                  idIcon: icon,
-                                  textFor: textFor,
-                                ),
-                                Center(
-                                  child: Text(
-                                    '${this.currently}',
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.comfortaa(
-                                        fontSize: 30,
-                                        decoration: TextDecoration.none,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                buildHourlyWeather(),
-                                LastUpdated(
-                                  lastupdated: lastupdate,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        themeMode: context.watch<ThemeCubit>().state.theme,
+        theme: MyTheme.lightTheme,
+        darkTheme: MyTheme.darkTheme,
+        home: results != null
+            ? RefreshIndicator(
+                color: Colors.transparent,
+                backgroundColor: Colors.transparent,
+                onRefresh: () => getTemperature(widget.cityName),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: getColor(),
                   ),
-                )
-              : Container(
-                  decoration: BoxDecoration(gradient: getColor()),
-                  child: Center(
-                    child: Text('check'.tr(),
-                        style: GoogleFonts.comfortaa(
-                            fontSize: 20,
-                            decoration: TextDecoration.none,
-                            color: Colors.black)),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                          child: ListView(
+                            children: [
+                              CityView(
+                                  city: widget.cityName,
+                                  latitude: lat,
+                                  longitude: lon),
+                              TempShow(
+                                temp: temp,
+                                idIcon: icon,
+                                textFor: textFor,
+                              ),
+                              Center(
+                                child: Text(
+                                  '${this.currently}',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.comfortaa(
+                                      fontSize: 30,
+                                      decoration: TextDecoration.none,
+                                      color: Colors.black),
+                                ),
+                              ),
+                              buildHourlyWeather(),
+                              LastUpdated(
+                                lastupdated: lastupdate,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-        ),
+              )
+            : Container(
+                decoration: BoxDecoration(gradient: getColor()),
+                child: Center(
+                  child: hasNetwork(),
+                ),
+              ),
+      ),
     );
+  }
+
+  Widget hasNetwork() {
+    try {
+      InternetAddress.lookup('example.com');
+      return Text('wait'.tr(),
+          style: GoogleFonts.comfortaa(
+              fontSize: 20,
+              decoration: TextDecoration.none,
+              color: Colors.black));
+    } on SocketException catch (_) {
+      return Text('check'.tr(),
+          style: GoogleFonts.comfortaa(
+              fontSize: 20,
+              decoration: TextDecoration.none,
+              color: Colors.black));
+    }
   }
 
   LinearGradient getColor() {
@@ -299,16 +317,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
     String url = 'https://api.openweathermap.org/data/2.5/forecast?';
     url += 'q=$cityName&';
     url += 'appid=29e75f209ad00e2d850bcaf376406c7b&';
-    url += 'units=${locate.get<TempState>().temp}';
+    url += 'units=${locate.get<TempBloc>().state.temp}';
     print(url);
     return url;
   }
 
   Future getTemperature(String city) async {
     http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=${locate.get<TempState>().temp}&lang=ru'));
+        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=${locate.get<TempBloc>().state.temp}&lang=ru'));
     results = jsonDecode(responce.body);
-    if (locate.get<TempState>().temp == 'metric')
+    if (locate.get<TempBloc>().state.temp == 'metric')
       textFor = 'C';
     else
       textFor = 'F';

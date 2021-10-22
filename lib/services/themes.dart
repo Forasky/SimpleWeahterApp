@@ -33,15 +33,9 @@ class TempBloc extends Cubit<TempState> {
   final locate = GetIt.instance;
   TempBloc() : super(TempState(temp: 'metric',wasImperial:  false));
 
-  void changeMetric() {emit(TempState(temp: 'metric',wasImperial: false));
-  locate.get<TempState>().temp='metric';
-  locate.get<TempState>().wasImperial=false;
-  }
+  void changeMetric() => emit(TempState(temp: 'metric',wasImperial: false));
 
-  void changeFarengeit() {emit(TempState(temp: 'imperial', wasImperial: true));
-  locate.get<TempState>().temp='imperial';
-  locate.get<TempState>().wasImperial=true;
-  }
+  void changeFarengeit() => emit(TempState(temp: 'imperial', wasImperial: true));
 }
 
 class TempState {
