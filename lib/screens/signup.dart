@@ -1,74 +1,86 @@
+// ignore: implementation_imports
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/screens/main_screen.dart';
 import 'package:final_project/services/google_signin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:provider/provider.dart';
+import 'package:get_it/get_it.dart';
 
 import 'email_login.dart';
 import 'email_signup.dart';
 
 class SignUp extends StatelessWidget {
-  final String title = "Sign Up";
+  final auth = GetIt.instance.get<AuthenticationBloc>();
+  final String title = "signup";
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      home: Scaffold(
         appBar: AppBar(
-          title: Text(this.title),
+          title: Text(this.title).tr(),
         ),
         body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <
-              Widget>[
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text("SimpleWeatherApp",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      fontFamily: 'Roboto')),
-            ),
-            Padding(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
                 padding: EdgeInsets.all(10.0),
-                child: SignInButton(
-                  Buttons.Email,
-                  text: "Sign up with Email",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => EmailSignUp()),
-                    );
-                  },
-                )),
-            Padding(
-                padding: EdgeInsets.all(10.0),
-                child: SignInButton(
-                  Buttons.Google,
-                  text: "Sign up with Google",
-                  onPressed: () {
-                    final provider =
-                        Provider.of<Authentication>(context, listen: false);
-                    provider.googleLogin();
-                    if (provider.user != null) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => MainScreen()),
-                      );
-                    }
-                  },
-                )),
-            Padding(
-                padding: EdgeInsets.all(10.0),
-                child: GestureDetector(
-                    child: Text("Log In Using Email",
-                        style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue)),
-                    onTap: () {
+                child: Text("SimpleWeatherApp",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        fontFamily: 'Roboto')),
+              ),
+              Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: SignInButton(
+                    Buttons.Email,
+                    text: "signup with email".tr(),
+                    onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EmailLogIn()),
+                        MaterialPageRoute(builder: (context) => EmailSignUp()),
                       );
-                    }))
-          ]),
-        ));
+                    },
+                  )),
+              Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: SignInButton(
+                    Buttons.Google,
+                    text: "signup with google".tr(),
+                    onPressed: () async {
+                      await auth.googleLogin();
+                      if (auth.user.id.isNotEmpty) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => MainScreen()),
+                        );
+                      }
+                    },
+                  )),
+              Padding(
+                padding: EdgeInsets.all(10.0),
+                child: GestureDetector(
+                  child: Text("login with email".tr(),
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue)),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EmailLogIn()),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

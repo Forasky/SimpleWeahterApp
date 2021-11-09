@@ -1,12 +1,12 @@
 # This is a generated file; do not edit or check into version control.
 firebase_auth=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_auth-1.4.1\\
 firebase_auth_web=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_auth_web-1.3.1\\
-firebase_core=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core-1.7.0\\
+firebase_core=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core-1.8.0\\
 firebase_core_web=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_core_web-1.1.0\\
 firebase_database=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\firebase_database-7.2.2\\
-google_sign_in=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\google_sign_in-5.1.1\\
+google_sign_in=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\google_sign_in-5.2.0\\
 google_sign_in_web=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\google_sign_in_web-0.10.0+3\\
-path_provider=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\path_provider-2.0.5\\
+path_provider=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\path_provider-2.0.6\\
 path_provider_linux=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\path_provider_linux-2.1.0\\
 path_provider_macos=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\path_provider_macos-2.0.2\\
 path_provider_windows=C:\\Dev\\flutter\\.pub-cache\\hosted\\pub.dartlang.org\\path_provider_windows-2.0.3\\

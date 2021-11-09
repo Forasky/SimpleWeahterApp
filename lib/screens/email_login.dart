@@ -1,3 +1,5 @@
+// ignore: implementation_imports
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,105 +19,116 @@ class _EmailLogInState extends State<EmailLogIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text("Login")),
+    return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      home: Scaffold(
+        appBar: AppBar(title: Text("login").tr()),
         body: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-                child: Column(children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(20.0),
-                child: TextFormField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: "Enter Email Address",
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Enter Email Address';
-                    } else if (!value.contains('@')) {
-                      return 'Please enter a valid email address!';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(20.0),
-                child: TextFormField(
-                  obscureText: true,
-                  controller: passwordController,
-                  decoration: InputDecoration(
-                    labelText: "Enter Password",
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                  ),
-                  // The validator receives the text that the user has entered.
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Enter Password';
-                    } else if (value.length < 6) {
-                      return 'Password must be atleast 6 characters!';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(20.0),
-                child: isLoading
-                    ? CircularProgressIndicator()
-                    : ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.lightBlue)),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              isLoading = true;
-                            });
-                            logInToFb();
-                          }
-                        },
-                        child: Text('Submit'),
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: "enter Email".tr(),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-              )
-            ]))));
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'enter Email'.tr();
+                      } else if (!value.contains('@')) {
+                        return 'please enter Email'.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: TextFormField(
+                    obscureText: true,
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      labelText: "enter password".tr(),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    // The validator receives the text that the user has entered.
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'enter password'.tr();
+                      } else if (value.length < 6) {
+                        return 'please enter password'.tr();
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.lightBlue),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                isLoading = true;
+                              });
+                              _login();
+                            }
+                          },
+                          child: Text('submit').tr(),
+                        ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  void logInToFb() {
-    FirebaseAuth.instance
-        .signInWithEmailAndPassword(
-            email: emailController.text, password: passwordController.text)
-        .then((result) {
+  void _login() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
       isLoading = false;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MainScreen()),
       );
-    }).catchError((err) {
-      print(err.message);
+    } catch (e) {
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Error"),
-              content: Text(err.message),
-              actions: [
-                ElevatedButton(
-                  child: Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
-    });
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("error").tr(),
+            content: Text(e.toString()),
+            actions: [
+              ElevatedButton(
+                child: Text("submit").tr(),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  isLoading = false;
+                  setState(() {});
+                },
+              )
+            ],
+          );
+        },
+      );
+    }
   }
 }

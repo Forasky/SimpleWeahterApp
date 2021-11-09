@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class Authentication extends ChangeNotifier {
+class AuthenticationBloc extends Bloc {
   late GoogleSignInAccount user;
+  
+  AuthenticationBloc(initialState) : super(initialState);
   GoogleSignInAccount get use => user;
 
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -19,6 +22,5 @@ class Authentication extends ChangeNotifier {
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken);
     await FirebaseAuth.instance.signInWithCredential(credential);
-    notifyListeners();
   }
 }

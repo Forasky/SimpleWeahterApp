@@ -1,19 +1,19 @@
-import 'dart:convert';
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/services/moor_database.dart';
-import 'package:final_project/services/themes.dart';
+import 'package:final_project/services/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
 import 'package:moor/moor.dart' hide Column;
 import 'package:provider/provider.dart';
 
 var name;
 var temp;
 var currently;
+final stream = GetIt.instance.get<TaskDao>();
 
 class CityScreen extends StatefulWidget {
   final ValueChanged<String> onCityTab;
@@ -31,71 +31,77 @@ class _CityScreenState extends State<CityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider(create: (context) => AppDatebase().taskDao),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        themeMode: context.watch<ThemeCubit>().state.theme,
-        theme: MyTheme.lightTheme,
-        darkTheme: MyTheme.darkTheme,
-        home: Column(
-          children: <Widget>[
-            Expanded(child: _buildTaskList(context)),
-            AddCity(),
-          ],
-        ),
+    return MaterialApp(
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      themeMode: context.watch<ThemeCubit>().state.theme,
+      theme: MyTheme.lightTheme,
+      darkTheme: MyTheme.darkTheme,
+      home: Column(
+        children: <Widget>[
+          Expanded(
+            child: _buildTaskList(context),
+          ),
+          AddCity(),
+        ],
       ),
     );
   }
 
   StreamBuilder<List<Task>> _buildTaskList(BuildContext context) {
-    final dao = Provider.of<TaskDao>(context, listen: false);
     return StreamBuilder(
-        stream: dao.watchAllTasks(),
-        builder: (context, snapshot) {
-          print(snapshot);
-          if (!snapshot.hasData) {
-            return Align(
-              alignment: Alignment.center,
-              child: CircularProgressIndicator(),
-            );
-          }
-          final tasks = snapshot.data;
-          return ListView.builder(
-              itemCount: tasks!.length,
-              itemBuilder: (context, index) {
-                final itemTask = tasks[index];
-                return _buildListItem(itemTask, dao);
-              });
-        });
+      stream: stream.watchAllTasks(),
+      builder: (context, snapshot) {
+        print(snapshot);
+        if (!snapshot.hasData) {
+          return Align(
+            alignment: Alignment.center,
+            child: CircularProgressIndicator(),
+          );
+        }
+        final tasks = snapshot.data;
+        return ListView.builder(
+          itemCount: tasks!.length,
+          itemBuilder: (context, index) {
+            final itemTask = tasks[index];
+            return _buildListItem(itemTask, stream);
+          },
+        );
+      },
+    );
   }
 
-  Widget _buildListItem(Task itemTask, TaskDao dao) {
+  Widget _buildListItem(Task itemTask, TaskDao stream) {
     return Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            caption: 'delete'.tr(),
-            color: Colors.red,
-            icon: Icons.delete,
-            onTap: () => dao.deleteTask(itemTask),
-          )
-        ],
-        child: TextButton(
-          onPressed: () => {widget.onCityTab(itemTask.name.toString())},
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(itemTask.name.toString(),
-                  style:
-                      GoogleFonts.comfortaa(fontSize: 28,)),
-            ],
+      actionPane: SlidableDrawerActionPane(),
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          caption: 'delete'.tr(),
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () => stream.deleteTask(itemTask),
+        )
+      ],
+      child: TextButton(
+        onPressed: () => {
+          widget.onCityTab(
+            itemTask.name.toString(),
           ),
-        ));
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              itemTask.name.toString(),
+              style: GoogleFonts.comfortaa(
+                fontSize: 28,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -105,7 +111,6 @@ class AddCity extends StatefulWidget {
 }
 
 class _AddCity extends State<AddCity> {
-
   @override
   Widget build(BuildContext context) {
     return LimitedBox(
@@ -130,10 +135,13 @@ class _AddCity extends State<AddCity> {
             ),
           ),
           onPressed: () {
-            //updateMessage("");
             showDialog(
-              context: context,
-              builder: (BuildContext context) => PopUp());})));}
+                context: context, builder: (BuildContext context) => PopUp());
+          },
+        ),
+      ),
+    );
+  }
 }
 
 class PopUp extends StatefulWidget {
@@ -148,53 +156,32 @@ class _PopUpState extends State<PopUp> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-                content: TextField(
-                  obscureText: false,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'insert city'.tr(),
-                  ),
-                  controller: cityController,
-                ),
-                actions: [
-                  Text(
-                    message,
-                    style: GoogleFonts.comfortaa(
-                        fontSize: 12, color: Colors.redAccent),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      final dao = Provider.of<TaskDao>(context, listen: false);
-                      final task =
-                          TasksCompanion(name: Value(cityController.text));
-                      checkName(cityController.text).then((value) =>
-                          value == true
-                              ? dao.insertTask(task)
-                              : cityController.clear());
-                    },
-                    child: Text('submit').tr(),
-                  ),
-                ],
-              );
-  }
-
-  Future checkName(String city) async {
-    var results;
-    http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=metric&lang=ru'));
-    results = jsonDecode(responce.body);
-    if (results['cod'] == "404" || results['cod'] == "400") {
-      updateMessage("city not found");
-      return false;
-    } else {
-      updateMessage("city was added");
-      return true;
-    }
-  }
-
-  updateMessage(String msg) {
-    setState(() {
-      message = msg;
-    });
+      content: TextField(
+        obscureText: false,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'enter city'.tr(),
+        ),
+        controller: cityController,
+      ),
+      actions: [
+        Text(
+          message.tr(),
+          style: GoogleFonts.comfortaa(fontSize: 12, color: Colors.black),
+        ),
+        TextButton(
+          onPressed: () async {
+            final task = TasksCompanion(name: Value(cityController.text));
+            if (await stream.checkName(cityController.text))
+              stream.insertTask(task);
+            else
+              cityController.clear();
+            message = stream.msg;
+            setState(() {});
+          },
+          child: Text('submit').tr(),
+        ),
+      ],
+    );
   }
 }
