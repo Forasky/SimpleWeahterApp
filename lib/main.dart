@@ -38,7 +38,8 @@ void main() async {
       AppDatebase(),
     ),
   );
-  GetIt.instance.registerSingleton<AuthenticationBloc>(AuthenticationBloc(GoogleSignInAccount));
+  GetIt.instance.registerSingleton<AuthenticationBloc>(
+      AuthenticationBloc(GoogleSignInAccount));
   runApp(
     EasyLocalization(
       supportedLocales: [Locale('en'), Locale('ru')],
@@ -55,11 +56,15 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         BlocProvider<AuthenticationBloc>(
-          create: (BuildContext context) =>
-              AuthenticationBloc(GoogleSignInAccount),
+          create: (context) => AuthenticationBloc(GoogleSignInAccount),
         ),
         BlocProvider<ThemeCubit>(
-          create: (BuildContext context) => ThemeCubit(),
+          create: (context) => ThemeCubit(),
+        ),
+        BlocProvider<TempBloc>(
+          create: (context) => TempBloc(
+            WeatherClass(hasData: false),
+          ),
         ),
       ],
       child: MaterialApp(

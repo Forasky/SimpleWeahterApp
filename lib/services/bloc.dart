@@ -45,10 +45,7 @@ class ThemeState {
   ThemeMode theme;
   bool wasDark;
 
-  ThemeState({
-    required this.theme,
-    required this.wasDark,
-  });
+  ThemeState({required this.theme, required this.wasDark});
 }
 
 class ChangeTempBloc extends Cubit<TempState> {
@@ -129,43 +126,30 @@ class AllColors {
 }
 
 class TempBloc extends Cubit<WeatherClass> {
+  static const _api = '29e75f209ad00e2d850bcaf376406c7b';
   WeatherClass wc = WeatherClass(hasData: false);
   ThemeBloc tb = ThemeBloc(
       AllColors(nowText: Colors.transparent, nowTheme: Colors.transparent));
   final getit = GetIt.instance.get<ChangeTempBloc>().state.temp;
-  TempBloc(WeatherClass initialState) : super(initialState);
+
+  TempBloc(WeatherClass initialState) : super(WeatherClass(hasData: false));
 
   Future getTemperatureNow(String city, String locale) async {
     if (city != wc.city) wc.hasData = false;
-    http.Response responce = await http.get(Uri.parse(
-        'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=$getit&lang=$locale'));
-        print('http://api.openweathermap.org/data/2.5/weather?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=$getit&lang=$locale');
+    http.Response responce = await http.get(
+      Uri.parse(
+          'http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$_api&units=$getit&lang=$locale'),
+    );
     var results = jsonDecode(responce.body);
-    wc.city = city;
     wc.lat = results['coord']['lat'];
     wc.lon = results['coord']['lon'];
-    wc.temp = results['main']['temp'];
-    wc.pressure = results['main']['pressure'];
-    wc.currently = results['weather'][0]['description'];
-    wc.humidity = results['main']['humidity'];
-    wc.windSpeed = results['wind']['speed'];
-    wc.icon = results['weather'][0]['icon'];
-    wc.lastupdate = DateTime.fromMillisecondsSinceEpoch(
-      results['dt'] * 1000,
-    );
-    wc.sunrise = results['sys']['sunrise'];
-    wc.sunshine = results['sys']['sunset'];
-    wc.feelsLike = results['main']['feels_like'];
-    tb.checkDay(wc.sunrise, wc.sunshine);
-    await getTemperatureList(city);
-  }
-
-  Future getTemperatureList(String city) async {
     String url =
-        'https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=29e75f209ad00e2d850bcaf376406c7b&units=$getit';
-    http.Response responce = await http.get(Uri.parse(url));
-    await getTemperatureDaily(city);
-    Map<String, dynamic> hourlyData = json.decode(responce.body);
+        'https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$_api&units=$getit';
+    http.Response responceHourly = await http.get(Uri.parse(url));
+    Map<String, dynamic> hourlyData = json.decode(responceHourly.body);
+    url =
+        'https://api.openweathermap.org/data/2.5/onecall?lat=${wc.lat}&lon=${wc.lon}&exclude=minutely,hourly&appid=$_api&units=$getit';
+    http.Response responceDaily = await http.get(Uri.parse(url));
     wc.tempList = [];
     wc.iconList = [];
     wc.dateList = [];
@@ -177,16 +161,11 @@ class TempBloc extends Cubit<WeatherClass> {
       DateTime date = DateTime.parse(hourlyData['list'][i]['dt_txt']);
       wc.dateList.add(date);
     }
-  }
-
-  Future getTemperatureDaily(String city) async {
-    String url =
-        'https://api.openweathermap.org/data/2.5/onecall?lat=${wc.lat}&lon=${wc.lon}&exclude=minutely,hourly&appid=29e75f209ad00e2d850bcaf376406c7b&units=$getit';
-    http.Response responceDaily = await http.get(Uri.parse(url));
     Map<String, dynamic> dailyData = json.decode(responceDaily.body);
     wc.dailytempList = [];
     wc.dailyiconList = [];
     wc.dailydateList = [];
+    wc.dailynightList = [];
     int dailySize = dailyData['daily'].length;
     wc.dailytempList.add(dailyData['daily'][0]['temp']['day']);
     for (int i = 0; i < dailySize; i++) {
@@ -197,12 +176,63 @@ class TempBloc extends Cubit<WeatherClass> {
           dailyData['daily'][i]['dt'] * 1000);
       wc.dailydateList.add(date);
     }
-    wc.hasData = true;
+    emit(
+      WeatherClass(
+        hasData: true,
+        city: city,
+        lat: wc.lat,
+        lon: wc.lon,
+        temp: results['main']['temp'],
+        pressure: results['main']['pressure'],
+        currently: results['weather'][0]['description'],
+        humidity: results['main']['humidity'],
+        windSpeed: results['wind']['speed'],
+        icon: results['weather'][0]['icon'],
+        lastupdate: DateTime.fromMillisecondsSinceEpoch(
+          results['dt'] * 1000,
+        ),
+        sunrise: results['sys']['sunrise'],
+        sunshine: results['sys']['sunset'],
+        feelsLike: results['main']['feels_like'],
+        tempList: wc.tempList,
+        iconList: wc.iconList,
+        dateList: wc.dateList,
+        dailytempList: wc.dailytempList,
+        dailyiconList: wc.dailyiconList,
+        dailydateList: wc.dailydateList,
+        dailynightList: wc.dailynightList,
+      ),
+    );
+    emit(state);
+    //tb.checkDay(wc.sunrise, wc.sunshine);
   }
 }
 
 class WeatherClass {
-  WeatherClass({Key? key, required this.hasData}) : super();
+  WeatherClass({
+    Key? key,
+    required this.hasData,
+    this.city,
+    this.lat,
+    this.lon,
+    this.temp,
+    this.currently,
+    this.humidity,
+    this.windSpeed,
+    this.icon,
+    this.lastupdate,
+    this.sunrise,
+    this.sunshine,
+    this.feelsLike,
+    this.pressure,
+    this.tempList = const [],
+    this.iconList = const [],
+    this.dateList = const [],
+    this.dailytempList = const [],
+    this.dailyiconList = const [],
+    this.dailydateList = const [],
+    this.dailynightList = const [],
+  }) : super();
   var city;
   var lat;
   var lon;
@@ -216,13 +246,13 @@ class WeatherClass {
   var sunshine;
   var feelsLike;
   var pressure;
-  List tempList = [];
-  List<String> iconList = [];
-  List<DateTime> dateList = [];
-  List dailytempList = [];
-  List<String> dailyiconList = [];
-  List<DateTime> dailydateList = [];
-  List dailynightList = [];
+  List<double> tempList;
+  List<String> iconList;
+  List<DateTime> dateList;
+  List dailytempList;
+  List<String> dailyiconList;
+  List<DateTime> dailydateList;
+  List dailynightList;
   late bool hasData;
 }
 
@@ -232,8 +262,8 @@ class SearchBloc extends Cubit<CityList> {
 
   Future getText() async {
     final text = await rootBundle.loadString('assets/cities/city_list.json');
-      cl.items = jsonDecode(text) as List<dynamic>;
-      cl.foundUsers = cl.items;
+    cl.items = jsonDecode(text) as List<dynamic>;
+    cl.foundUsers = cl.items;
   }
 
   void textChanged(String text) {
