@@ -59,5 +59,9 @@
     "September" : "Сентябрь",
     "October" : "Октябрь",
     "November" : "Ноябрь",
-    "December" : "Декабрь"
+    "December" : "Декабрь",
+    "incorrect user" : "Неверные данные",
+    "incorrect password" : "Пароль не верный",
+    "account exist" : "Аккаунт с такой электронной почтой уже есть",
+    "no found" : "Пользователь не найден"
 }

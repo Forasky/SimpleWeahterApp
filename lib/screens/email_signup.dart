@@ -121,7 +121,6 @@ class _EmailSignUpState extends State<EmailSignUp> {
                           ? CircularProgressIndicator()
                           : Row(
                               children: [
-                                Text(state.message),
                                 ElevatedButton(
                                   style: ButtonStyle(
                                     backgroundColor:
@@ -145,7 +144,9 @@ class _EmailSignUpState extends State<EmailSignUp> {
                                     else {
                                       AlertDialog(
                                         title: Text("error").tr(),
-                                        content: Text(state.message.toString()),
+                                        content: Text(
+                                          state.message.toString().tr(),
+                                        ),
                                         actions: [
                                           ElevatedButton(
                                             child: Text("submit").tr(),
@@ -158,6 +159,10 @@ class _EmailSignUpState extends State<EmailSignUp> {
                                     }
                                   },
                                   child: Text('submit').tr(),
+                                ),
+                                Spacer(),
+                                Text(
+                                  state.message.tr(),
                                 ),
                               ],
                             ),

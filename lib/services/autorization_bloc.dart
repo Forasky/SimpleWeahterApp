@@ -28,7 +28,7 @@ class AuthenticationBloc extends Cubit<Credits> {
       } else {
         emit(
           Credits(
-            message: 'User is incorrect.',
+            message: 'incorrect user',
             isLogin: false,
           ),
         );
@@ -38,7 +38,7 @@ class AuthenticationBloc extends Cubit<Credits> {
       if (e.code == 'weak-password') {
         emit(
           Credits(
-            message: 'The password provided is too weak.',
+            message: 'incorrect password',
             isLogin: false,
           ),
         );
@@ -46,7 +46,7 @@ class AuthenticationBloc extends Cubit<Credits> {
       } else if (e.code == 'email-already-in-use') {
         emit(
           Credits(
-            message: 'The account already exists for that email.',
+            message: 'account exist',
             isLogin: false,
           ),
         );
@@ -80,7 +80,7 @@ class AuthenticationBloc extends Cubit<Credits> {
     try {
       var result = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      if (result.user?.uid == null) {
+      if (result.user?.uid != null) {
         emit(
           Credits(
             isLogin: true,
@@ -93,22 +93,15 @@ class AuthenticationBloc extends Cubit<Credits> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         emit(
-          Credits(isLogin: false, message: 'No user found for that email.'),
+          Credits(isLogin: false, message: 'no found'),
         );
         resetMsg();
       } else if (e.code == 'wrong-password') {
         emit(
-          Credits(
-              isLogin: false,
-              message: 'Wrong password provided for that user.'),
+          Credits(isLogin: false, message: 'incorrect password'),
         );
         resetMsg();
       }
-    } finally {
-      emit(
-        Credits(message: 'No user found.', isLogin: false),
-      );
-      resetMsg();
     }
   }
 

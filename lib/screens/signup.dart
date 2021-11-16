@@ -29,11 +29,13 @@ class SignUp extends StatelessWidget {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.all(10.0),
-                child: Text("SimpleWeatherApp",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                        fontFamily: 'Roboto')),
+                child: Text(
+                  "SimpleWeatherApp",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                      fontFamily: 'Roboto'),
+                ),
               ),
               Padding(
                 padding: EdgeInsets.all(10.0),

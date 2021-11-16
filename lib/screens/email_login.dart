@@ -28,7 +28,9 @@ class _EmailLogInState extends State<EmailLogIn> {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           home: Scaffold(
-            appBar: AppBar(title: Text("login").tr()),
+            appBar: AppBar(
+              title: Text("login").tr(),
+            ),
             body: Form(
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: SingleChildScrollView(
@@ -81,7 +83,6 @@ class _EmailLogInState extends State<EmailLogIn> {
                           ? CircularProgressIndicator()
                           : Row(
                               children: [
-                                Text(state.message),
                                 ElevatedButton(
                                   style: ButtonStyle(
                                     backgroundColor:
@@ -103,7 +104,7 @@ class _EmailLogInState extends State<EmailLogIn> {
                                     else {
                                       AlertDialog(
                                         title: Text("error").tr(),
-                                        content: Text(state.message.toString()),
+                                        content: Text(state.message.toString().tr()),
                                         actions: [
                                           ElevatedButton(
                                             child: Text("submit").tr(),
@@ -116,6 +117,10 @@ class _EmailLogInState extends State<EmailLogIn> {
                                     }
                                   },
                                   child: Text('submit').tr(),
+                                ),
+                                Spacer(),
+                                Text(
+                                  state.message.tr(),
                                 ),
                               ],
                             ),
