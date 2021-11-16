@@ -67,7 +67,7 @@ class Task extends DataClass implements Insertable<Task> {
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode, name.hashCode));
+  int get hashCode => Object.hash(id, name);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -178,17 +178,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
 abstract class _$AppDatebase extends GeneratedDatabase {
   _$AppDatebase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $TasksTable tasks = $TasksTable(this);
-  late final TaskDao taskDao = TaskDao(this as AppDatebase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [tasks];
-}
-
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
-mixin _$TaskDaoMixin on DatabaseAccessor<AppDatebase> {
-  $TasksTable get tasks => attachedDatabase.tasks;
 }

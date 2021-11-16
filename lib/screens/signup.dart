@@ -1,7 +1,7 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/screens/main_screen.dart';
-import 'package:final_project/services/google_signin.dart';
+import 'package:final_project/services/autorization_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:get_it/get_it.dart';
@@ -36,32 +36,34 @@ class SignUp extends StatelessWidget {
                         fontFamily: 'Roboto')),
               ),
               Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: SignInButton(
-                    Buttons.Email,
-                    text: "signup with email".tr(),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EmailSignUp()),
-                      );
-                    },
-                  )),
+                padding: EdgeInsets.all(10.0),
+                child: SignInButton(
+                  Buttons.Email,
+                  text: "signup with email".tr(),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EmailSignUp()),
+                    );
+                  },
+                ),
+              ),
               Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: SignInButton(
-                    Buttons.Google,
-                    text: "signup with google".tr(),
-                    onPressed: () async {
-                      await auth.googleLogin();
-                      if (auth.user.id.isNotEmpty) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => MainScreen()),
-                        );
-                      }
-                    },
-                  )),
+                padding: EdgeInsets.all(10.0),
+                child: SignInButton(
+                  Buttons.Google,
+                  text: "signup with google".tr(),
+                  onPressed: () async {
+                    await auth.signInWithGoogle();
+                    if (auth.state.isLogin) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainScreen()),
+                      );
+                    }
+                  },
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: GestureDetector(
@@ -72,7 +74,9 @@ class SignUp extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => EmailLogIn()),
+                      MaterialPageRoute(
+                        builder: (context) => EmailLogIn(),
+                      ),
                     );
                   },
                 ),

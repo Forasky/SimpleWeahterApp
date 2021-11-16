@@ -1,4 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:final_project/services/helping_classes.dart';
+import 'package:final_project/services/weather_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,8 +8,6 @@ import 'package:final_project/services/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-
-final cr = GetIt.instance.get<AllColors>();
 
 class WeatherScreen extends StatefulWidget {
   final String cityName;
@@ -17,8 +17,8 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  final weather = WeatherClass(hasData: false);
   final tempbloc = GetIt.instance.get<TempBloc>();
+  final Images images = Images();
 
   @override
   void initState() {
@@ -31,23 +31,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TempBloc, WeatherClass>(
+    return BlocBuilder<TempBloc, Temperature>(
+      bloc: tempbloc,
       builder: (context, state) {
         return MaterialApp(
           themeMode: context.watch<ThemeCubit>().state.theme,
           debugShowCheckedModeBanner: false,
           home: Scaffold(
-            body: tempbloc.state.hasData == true
+            body: state.hasData == true
                 ? Container(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        stops: [0, 1.0],
-                        colors: [
-                          Colors.indigo,
-                          Colors.blueAccent,
-                        ],
+                      image: DecorationImage(
+                        image: AssetImage(images.images['clear']),
+                        fit: BoxFit.fill,
                       ),
                     ),
                     child: CustomScrollView(
@@ -63,16 +59,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             textAlign: TextAlign.center,
                           ),
                           backgroundColor: Colors.transparent,
-                          shadowColor: Colors.white,
-                          pinned: true,
                           flexibleSpace: FlexibleSpaceBar(
                             background: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 _showWeather(
-                                    tempbloc.state.temp, tempbloc.state.icon),
+                                  state.current.temp,
+                                  state.current.weather.first.icon,
+                                ),
                                 Text(
-                                  tempbloc.state.currently.toString(),
+                                  state.current.weather.first.description
+                                      .toString(),
                                   style: GoogleFonts.comfortaa(fontSize: 30),
                                   textAlign: TextAlign.center,
                                 ),
@@ -80,7 +77,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   padding: EdgeInsets.only(top: 10),
                                   child: Text(
                                     'feelsLike'.tr() +
-                                        tempbloc.state.feelsLike
+                                        state.current.feelsLike
                                             .toStringAsFixed(1) +
                                         '°',
                                     style: GoogleFonts.comfortaa(fontSize: 20),
@@ -107,24 +104,28 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            DateFormat.Hm().format(tempbloc
-                                                        .state.dateList[index]) ==
+                                            DateFormat.Hm().format(state
+                                                        .hourly[index].dt) ==
                                                     '00:00'
                                                 ? Text(
-                                                    '${DateFormat.Hm().format(tempbloc.state.dateList[index])}\n' +
+                                                    '${DateFormat.Hm().format(state.hourly[index].dt)}\n' +
                                                         DateFormat('EEEE')
-                                                            .format(tempbloc.state
-                                                                    .dateList[
-                                                                index])
+                                                            .format(
+                                                              state
+                                                                  .hourly[index]
+                                                                  .dt,
+                                                            )
                                                             .toString()
                                                             .tr(),
                                                     textAlign: TextAlign.center,
                                                   )
                                                 : Text(
-                                                    '${DateFormat.Hm().format(tempbloc.state.dateList[index])}\n'),
+                                                    '${DateFormat.Hm().format(
+                                                    state.hourly[index].dt,
+                                                  )}\n'),
                                             Image.network(
-                                                'http://openweathermap.org/img/wn/${tempbloc.state.iconList[index]}.png'),
-                                            Text(tempbloc.state.tempList[index]
+                                                'http://openweathermap.org/img/wn/${state.hourly[index].weather.first.icon}.png'),
+                                            Text(state.hourly[index].temp
                                                     .toStringAsFixed(1) +
                                                 '°'),
                                           ],
@@ -139,7 +140,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                         color: Colors.transparent,
                                       ),
                                     ),
-                                    color: cr.nowTheme,
+                                    color: Colors.white,
                                   ),
                                   height: 120,
                                   child: Row(
@@ -147,21 +148,21 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                         MainAxisAlignment.spaceAround,
                                     children: [
                                       _weatherContainer(
-                                        tempbloc.state.humidity,
+                                        state.current.humidity,
                                         'humidity'.tr(),
                                         Icon(
                                           FontAwesomeIcons.tint,
                                         ),
                                       ),
                                       _weatherContainer(
-                                        tempbloc.state.windSpeed,
+                                        state.current.windSpeed,
                                         'speedw'.tr(),
                                         Icon(
                                           FontAwesomeIcons.wind,
                                         ),
                                       ),
                                       _weatherContainer(
-                                        tempbloc.state.pressure,
+                                        state.current.pressure,
                                         'pressure'.tr(),
                                         Icon(
                                           FontAwesomeIcons.sortAmountDownAlt,
@@ -172,7 +173,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 ),
                                 Container(
                                   height: 550,
-                                  color: cr.nowTheme,
+                                  color: Colors.white,
                                   child: ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
@@ -180,7 +181,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                       return ListTile(
                                         title: Text(
                                           DateFormat('EEEE').format(
-                                            tempbloc.state.dailydateList[index],
+                                            state.daily[index].dt,
                                           ),
                                           style: GoogleFonts.comfortaa(
                                             fontSize: 20,
@@ -188,13 +189,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                         ).tr(),
                                         subtitle: Text(
                                           DateFormat.d()
-                                                  .format(tempbloc
-                                                      .state.dailydateList[index])
+                                                  .format(
+                                                    state.daily[index].dt,
+                                                  )
                                                   .toString() +
                                               ' ' +
                                               DateFormat.LLLL()
-                                                  .format(tempbloc
-                                                      .state.dailydateList[index])
+                                                  .format(
+                                                    state.daily[index].dt,
+                                                  )
                                                   .toString()
                                                   .tr(),
                                           style: GoogleFonts.comfortaa(
@@ -209,9 +212,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               Image.network(
-                                                  'http://openweathermap.org/img/wn/${tempbloc.state.dailyiconList[index]}.png'),
+                                                  'http://openweathermap.org/img/wn/${state.daily[index].weather.first.icon}.png'),
                                               Text(
-                                                tempbloc.state.dailytempList[index]
+                                                state.daily[index].temp.day
                                                         .toStringAsFixed(1) +
                                                     '°',
                                                 style: GoogleFonts.comfortaa(
@@ -219,8 +222,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                                 ),
                                               ),
                                               Text(
-                                                tempbloc.state
-                                                        .dailynightList[index]
+                                                state.daily[index].temp.night
                                                         .toStringAsFixed(1) +
                                                     '°',
                                                 style: GoogleFonts.comfortaa(
@@ -239,18 +241,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 Container(
                                   height: 30,
                                   width: MediaQuery.of(context).size.width,
-                                  color: cr.nowTheme,
+                                  color: Colors.white,
                                   child: Text(
                                     'last updated'.tr(
                                       args: [
                                         DateFormat.jm()
-                                            .format(tempbloc.state.lastupdate),
+                                            .format(state.current.dt),
                                       ],
                                     ),
                                     style: GoogleFonts.comfortaa(
                                         fontSize: 15,
                                         decoration: TextDecoration.none,
-                                        color: cr.nowText),
+                                        color: Colors.black),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -294,7 +296,7 @@ Widget _weatherContainer(var value, var someText, var icon) {
           someText.toString(),
           style: GoogleFonts.comfortaa(
             fontSize: 15,
-            color: cr.nowText,
+            color: Colors.black,
           ),
           textAlign: TextAlign.center,
         ),
@@ -302,7 +304,7 @@ Widget _weatherContainer(var value, var someText, var icon) {
           value.toString(),
           style: GoogleFonts.comfortaa(
             fontSize: 18,
-            color: cr.nowText,
+            color: Colors.black,
           ),
           textAlign: TextAlign.center,
         ),

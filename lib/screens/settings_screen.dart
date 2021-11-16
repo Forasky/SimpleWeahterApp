@@ -1,11 +1,13 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
+import 'package:final_project/screens/select_language.dart';
 import 'package:final_project/screens/signup.dart';
+import 'package:final_project/services/autorization_bloc.dart';
 import 'package:final_project/services/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class _ChangeButton extends StatelessWidget {
@@ -14,12 +16,13 @@ class _ChangeButton extends StatelessWidget {
     return BlocBuilder<ThemeCubit, ThemeState>(
       builder: (context, state) {
         return Switch.adaptive(
-            value: state.wasDark,
-            onChanged: (value) {
-              value == true
-                  ? context.read<ThemeCubit>().changeDark()
-                  : context.read<ThemeCubit>().changeLight();
-            });
+          value: state.wasDark,
+          onChanged: (value) {
+            value == true
+                ? context.read<ThemeCubit>().changeDark()
+                : context.read<ThemeCubit>().changeLight();
+          },
+        );
       },
     );
   }
@@ -31,19 +34,20 @@ class ChngTepmButton extends StatefulWidget {
 }
 
 class _ChngTepmButtonState extends State<ChngTepmButton> {
+  final getit = GetIt.instance.get<ChangeTempBloc>();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChangeTempBloc, TempState>(
       builder: (context, state) {
         return Switch.adaptive(
-            value: GetIt.instance.get<ChangeTempBloc>().state.wasImperial,
-            onChanged: (value) {
-              value == true
-                  ? GetIt.instance.get<ChangeTempBloc>().changeFarengeit()
-                  : GetIt.instance.get<ChangeTempBloc>().changeMetric();
-              setState(() {});
-              print(context.read<ChangeTempBloc>().state.temp);
-            });
+          value: getit.state.wasImperial,
+          onChanged: (value) {
+            value == true ? getit.changeFarengeit() : getit.changeMetric();
+            setState(() {});
+            print(getit.state.temp);
+          },
+        );
       },
     );
   }
@@ -55,7 +59,9 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  final bloc = GetIt.instance.get<AuthenticationBloc>();
   static String png = 'assets/images/avatar.png';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -76,16 +82,14 @@ class _SettingScreenState extends State<SettingScreen> {
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        stops: [
-                          0,
-                          1.0
-                        ],
-                        colors: [
-                          Colors.green,
-                          Colors.blueGrey,
-                        ]),
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0, 1.0],
+                      colors: [
+                        Colors.green,
+                        Colors.blueGrey,
+                      ],
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -100,15 +104,14 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                       ),
                       Text(
-                        FirebaseAuth.instance.currentUser!.displayName
-                            .toString(),
+                        bloc.state.userName.toString(),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.black,
                         ),
                       ),
                       Text(
-                        FirebaseAuth.instance.currentUser!.email.toString(),
+                        bloc.state.eMail.toString(),
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.black,
@@ -118,7 +121,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         padding: const EdgeInsets.all(10),
                         child: TextButton(
                           onPressed: () {
-                            FirebaseAuth.instance.signOut();
+                            bloc.logOut();
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -146,8 +149,15 @@ class _SettingScreenState extends State<SettingScreen> {
                   padding: EdgeInsets.all(15),
                   child: Expanded(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text('swchTh').tr(),
+                        Text(
+                          'swchTh',
+                          style: GoogleFonts.comfortaa(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ).tr(),
                         _ChangeButton(),
                       ],
                     ),
@@ -161,11 +171,51 @@ class _SettingScreenState extends State<SettingScreen> {
                   padding: EdgeInsets.all(15),
                   child: Expanded(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text('swchTemp').tr(),
+                        Text(
+                          'swchTemp',
+                          style: GoogleFonts.comfortaa(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ).tr(),
                         ChngTepmButton(),
                       ],
                     ),
+                  ),
+                ),
+                Divider(
+                  height: 4,
+                  color: Colors.grey,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: TextButton(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          'change language',
+                          style: GoogleFonts.comfortaa(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ).tr(),
+                        Icon(
+                          Icons.language,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => LanguageView(),
+                            fullscreenDialog: true),
+                      );
+                    },
                   ),
                 ),
                 Divider(

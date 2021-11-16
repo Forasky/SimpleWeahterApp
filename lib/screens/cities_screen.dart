@@ -3,17 +3,14 @@ import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:final_project/services/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moor/moor.dart' hide Column;
 import 'package:provider/provider.dart';
 
-var name;
-var temp;
-var currently;
-final stream = GetIt.instance.get<TaskDao>();
+final bloc = GetIt.instance.get<DatabaseBloc>();
 
 class CityScreen extends StatefulWidget {
   final ValueChanged<String> onCityTab;
@@ -51,10 +48,14 @@ class _CityScreenState extends State<CityScreen> {
 
   StreamBuilder<List<Task>> _buildTaskList(BuildContext context) {
     return StreamBuilder(
-      stream: stream.watchAllTasks(),
+      stream: bloc.datebase.watchAllTasks(),
       builder: (context, snapshot) {
-        print(snapshot);
-        if (!snapshot.hasData) {
+        if (!snapshot.hasData && snapshot.connectionState == ConnectionState.active)
+        return Align(
+            alignment: Alignment.center,
+            child: Text('add city').tr(),
+          );
+        else if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
           return Align(
             alignment: Alignment.center,
             child: CircularProgressIndicator(),
@@ -65,14 +66,14 @@ class _CityScreenState extends State<CityScreen> {
           itemCount: tasks!.length,
           itemBuilder: (context, index) {
             final itemTask = tasks[index];
-            return _buildListItem(itemTask, stream);
+            return _buildListItem(itemTask, bloc);
           },
         );
       },
     );
   }
 
-  Widget _buildListItem(Task itemTask, TaskDao stream) {
+  Widget _buildListItem(Task itemTask, DatabaseBloc stream) {
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       secondaryActions: <Widget>[
@@ -80,7 +81,7 @@ class _CityScreenState extends State<CityScreen> {
           caption: 'delete'.tr(),
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => stream.deleteTask(itemTask),
+          onTap: () => bloc.deleteTask(itemTask),
         )
       ],
       child: TextButton(
@@ -107,10 +108,10 @@ class _CityScreenState extends State<CityScreen> {
 
 class AddCity extends StatefulWidget {
   @override
-  _AddCity createState() => _AddCity();
+  _AddCityState createState() => _AddCityState();
 }
 
-class _AddCity extends State<AddCity> {
+class _AddCityState extends State<AddCity> {
   @override
   Widget build(BuildContext context) {
     return LimitedBox(
@@ -136,7 +137,8 @@ class _AddCity extends State<AddCity> {
           ),
           onPressed: () {
             showDialog(
-                context: context, builder: (BuildContext context) => PopUp());
+                context: context,
+                builder: (BuildContext context) => AddingCityPopUp());
           },
         ),
       ),
@@ -144,44 +146,42 @@ class _AddCity extends State<AddCity> {
   }
 }
 
-class PopUp extends StatefulWidget {
+class AddingCityPopUp extends StatefulWidget {
   @override
-  _PopUpState createState() => _PopUpState();
+  _AddingCityPopUpState createState() => _AddingCityPopUpState();
 }
 
-class _PopUpState extends State<PopUp> {
+class _AddingCityPopUpState extends State<AddingCityPopUp> {
   TextEditingController cityController = TextEditingController();
-  String message = "";
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      content: TextField(
-        obscureText: false,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'enter city'.tr(),
-        ),
-        controller: cityController,
-      ),
-      actions: [
-        Text(
-          message.tr(),
-          style: GoogleFonts.comfortaa(fontSize: 12, color: Colors.black),
-        ),
-        TextButton(
-          onPressed: () async {
-            final task = TasksCompanion(name: Value(cityController.text));
-            if (await stream.checkName(cityController.text))
-              stream.insertTask(task);
-            else
-              cityController.clear();
-            message = stream.msg;
-            setState(() {});
-          },
-          child: Text('submit').tr(),
-        ),
-      ],
+    return BlocBuilder<DatabaseBloc, AppDatebase>(
+      bloc: bloc,
+      builder: (context, state) {
+        return AlertDialog(
+          content: TextField(
+            obscureText: false,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'enter city'.tr(),
+            ),
+            controller: cityController,
+          ),
+          actions: [
+            Text(
+              bloc.state.msg.tr(),
+              style: GoogleFonts.comfortaa(fontSize: 12, color: Colors.black),
+            ),
+            TextButton(
+              onPressed: () async {
+                bloc.insertTask(cityController.text);
+              },
+              child: Text('submit').tr(),
+            ),
+          ],
+        );
+      },
     );
   }
 }

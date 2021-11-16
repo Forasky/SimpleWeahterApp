@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -19,21 +18,12 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final bloc = GetIt.instance.get<SearchBloc>();
+  final database = GetIt.instance.get<DatabaseBloc>();
 
   @override
   void initState() {
-    _getText();
     super.initState();
-  }
-
-  void _getText() async {
-    await bloc.getText();
-    setState(() {});
-  }
-
-  void _changeList(String text) async {
-    bloc.textChanged(text);
-    setState(() {});
+    bloc.getText();
   }
 
   @override
@@ -41,81 +31,85 @@ class _SearchScreenState extends State<SearchScreen> {
     return MultiProvider(
       providers: [
         BlocProvider<ThemeCubit>(
-          create: (BuildContext context) => ThemeCubit(),
+          create: (context) => ThemeCubit(),
         ),
       ],
-      child: MaterialApp(
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        themeMode: context.watch<ThemeCubit>().state.theme,
-        theme: MyTheme.lightTheme,
-        darkTheme: MyTheme.darkTheme,
-        home: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            actions: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 20, 10, 0),
-                child: SizedBox(
-                  width: 350,
-                  child: TextField(
-                    onChanged: (value) => _changeList(value),
-                    decoration:
-                        InputDecoration.collapsed(hintText: 'enter city'.tr()),
+      child: BlocBuilder<SearchBloc, CityList>(
+        bloc: bloc,
+        builder: (context, state) {
+          return MaterialApp(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            themeMode: context.watch<ThemeCubit>().state.theme,
+            theme: MyTheme.lightTheme,
+            darkTheme: MyTheme.darkTheme,
+            home: Scaffold(
+              resizeToAvoidBottomInset: false,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 20, 10, 0),
+                    child: SizedBox(
+                      width: 350,
+                      child: TextField(
+                        onChanged: (value) => bloc.textChanged(value),
+                        decoration: InputDecoration.collapsed(
+                            hintText: 'enter city'.tr()),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-          body: bloc.cl.foundUsers.isEmpty
-              ? Align(
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                )
-              : bloc.cl.foundUsers.contains(0)
+              body: state.foundUsers.isEmpty
                   ? Align(
                       alignment: Alignment.center,
-                      child: Text('no data found').tr(),
+                      child: CircularProgressIndicator(),
                     )
-                  : ListView.builder(
-                      itemCount: bloc.cl.foundUsers.length,
-                      itemBuilder: (context, index) {
-                        return TextButton(
-                          onPressed: () => {
-                            widget.onCityTab(bloc.cl.foundUsers[index]["name"]),
-                          },
-                          onLongPress: () {
-                            final dao =
-                                Provider.of<TaskDao>(context, listen: false);
-                            final task = TasksCompanion(
-                              name: Value(bloc.cl.foundUsers[index]["name"]),
+                  : (state.foundUsers.isEmpty && state.items.isNotEmpty)
+                      ? Align(
+                          alignment: Alignment.center,
+                          child: Text('no data found').tr(),
+                        )
+                      : ListView.builder(
+                          itemCount: state.foundUsers.length,
+                          itemBuilder: (context, index) {
+                            return TextButton(
+                              onPressed: () => {
+                                widget
+                                    .onCityTab(state.foundUsers[index]["name"]),
+                              },
+                              onLongPress: () {
+                                database.insertTask(
+                                    state.foundUsers[index]["name"]);
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Text(
+                                    state.foundUsers[index]["name"],
+                                    style: GoogleFonts.comfortaa(
+                                      fontSize: 16,
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
+                                  Text(
+                                    state.foundUsers[index]["country"],
+                                    style: GoogleFonts.comfortaa(
+                                      fontSize: 16,
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
-                            dao.insertTask(task);
                           },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                bloc.cl.foundUsers[index]["name"],
-                                style: GoogleFonts.comfortaa(
-                                  fontSize: 16,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                              Text(
-                                bloc.cl.foundUsers[index]["country"],
-                                style: GoogleFonts.comfortaa(
-                                  fontSize: 16,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-        ),
+                        ),
+            ),
+          );
+        },
       ),
     );
   }

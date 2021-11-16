@@ -21,6 +21,7 @@
     "add" : "Add city",
     "loading" : "Loading...",
     "temp" : "Temperature: ",
+    "change language" : "Choose language",
     "C°" : "C°",
     "F°" : "F°",
     "error" : "Error!",
