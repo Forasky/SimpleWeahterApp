@@ -62,15 +62,15 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ),
-              body: state.foundUsers.isEmpty
+              body: state.foundUsers.isEmpty && state.items.isNotEmpty
                   ? Align(
                       alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
+                      child: Text('no data found').tr(),
                     )
-                  : (state.foundUsers.isEmpty && state.items.isNotEmpty)
+                  : (state.foundUsers.isEmpty)
                       ? Align(
                           alignment: Alignment.center,
-                          child: Text('no data found').tr(),
+                          child: CircularProgressIndicator(),
                         )
                       : ListView.builder(
                           itemCount: state.foundUsers.length,

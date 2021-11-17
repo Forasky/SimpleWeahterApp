@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 final bloc = GetIt.instance.get<DatabaseBloc>();
 final searchBloc = GetIt.instance.get<SearchBloc>();
@@ -172,13 +173,16 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
       bloc: bloc,
       builder: (context, state) {
         return AlertDialog(
-          content: TextField(
-            obscureText: false,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'enter city'.tr(),
-            ),
-            controller: cityController,
+          content: DropdownSearch<String>(
+            showSearchBox: true,
+            mode: Mode.BOTTOM_SHEET,
+            items: [
+              for (int i = 0; i < searchBloc.state.foundUsers.length; i++)
+                searchBloc.state.foundUsers[i]['name'],
+            ],
+            // ignore: deprecated_member_use
+            label: 'choose city'.tr(),
+            onChanged: (value) => searchBloc.textChanged(value!),
           ),
           actions: [
             Text(
