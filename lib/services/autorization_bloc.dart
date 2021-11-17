@@ -26,40 +26,18 @@ class AuthenticationBloc extends Cubit<Credits> {
           ),
         );
       } else {
-        emit(
-          Credits(
-            message: 'incorrect user',
-            isLogin: false,
-          ),
-        );
-        resetMsg();
+        setFalse('incorrect user');
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        emit(
-          Credits(
-            message: 'incorrect password',
-            isLogin: false,
-          ),
-        );
-        resetMsg();
+        setFalse('incorrect password');
       } else if (e.code == 'email-already-in-use') {
-        emit(
-          Credits(
-            message: 'account exist',
-            isLogin: false,
-          ),
-        );
-        resetMsg();
+        setFalse('account exist');
       }
     } catch (e) {
-      emit(
-        Credits(
-          message: e.toString(),
-          isLogin: false,
-        ),
+      setFalse(
+        e.toString(),
       );
-      resetMsg();
     }
   }
 
@@ -92,26 +70,11 @@ class AuthenticationBloc extends Cubit<Credits> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        emit(
-          Credits(isLogin: false, message: 'no found'),
-        );
-        resetMsg();
+        setFalse('no found');
       } else if (e.code == 'wrong-password') {
-        emit(
-          Credits(isLogin: false, message: 'incorrect password'),
-        );
-        resetMsg();
+        setFalse('incorrect password');
       }
     }
-  }
-
-  void resetMsg() {
-    Future.delayed(
-      const Duration(seconds: 3),
-      () => emit(
-        Credits(isLogin: false, message: ''),
-      ),
-    );
   }
 
   Future logOut() async {
@@ -140,10 +103,23 @@ class AuthenticationBloc extends Cubit<Credits> {
         );
       }
     } on FirebaseAuthException catch (_) {
-      emit(
-        Credits(isLogin: false, message: ''),
-      );
+      setFalse('no found');
     }
+  }
+
+  void setFalse(String message) {
+    emit(
+      Credits(
+        message: message,
+        isLogin: false,
+      ),
+    );
+    Future.delayed(
+      const Duration(seconds: 3),
+      () => emit(
+        Credits(isLogin: false, message: ''),
+      ),
+    );
   }
 }
 

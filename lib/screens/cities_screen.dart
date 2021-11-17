@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 final bloc = GetIt.instance.get<DatabaseBloc>();
+final searchBloc = GetIt.instance.get<SearchBloc>();
 
 class CityScreen extends StatefulWidget {
   final ValueChanged<String> onCityTab;
@@ -24,6 +25,7 @@ class _CityScreenState extends State<CityScreen> {
   @override
   void initState() {
     super.initState();
+    if (searchBloc.state.foundUsers.isEmpty) searchBloc.getText();
   }
 
   @override
@@ -50,12 +52,14 @@ class _CityScreenState extends State<CityScreen> {
     return StreamBuilder(
       stream: bloc.datebase.watchAllTasks(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData && snapshot.connectionState == ConnectionState.active)
-        return Align(
+        if (!snapshot.hasData &&
+            snapshot.connectionState == ConnectionState.active)
+          return Align(
             alignment: Alignment.center,
             child: Text('add city').tr(),
           );
-        else if (!snapshot.hasData && snapshot.connectionState == ConnectionState.waiting) {
+        else if (!snapshot.hasData &&
+            snapshot.connectionState == ConnectionState.waiting) {
           return Align(
             alignment: Alignment.center,
             child: CircularProgressIndicator(),
@@ -73,35 +77,43 @@ class _CityScreenState extends State<CityScreen> {
     );
   }
 
-  Widget _buildListItem(Task itemTask, DatabaseBloc stream) {
-    return Slidable(
-      actionPane: SlidableDrawerActionPane(),
-      secondaryActions: <Widget>[
-        IconSlideAction(
-          caption: 'delete'.tr(),
-          color: Colors.red,
-          icon: Icons.delete,
-          onTap: () => bloc.deleteTask(itemTask),
-        )
-      ],
-      child: TextButton(
-        onPressed: () => {
-          widget.onCityTab(
-            itemTask.name.toString(),
-          ),
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text(
-              itemTask.name.toString(),
-              style: GoogleFonts.comfortaa(
-                fontSize: 28,
-              ),
-            ),
+  Widget _buildListItem(Task itemTask, DatabaseBloc bloc) {
+    return Column(
+      children: [
+        Slidable(
+          actionPane: SlidableDrawerActionPane(),
+          secondaryActions: <Widget>[
+            IconSlideAction(
+              caption: 'delete'.tr(),
+              color: Colors.red,
+              icon: Icons.delete,
+              onTap: () => bloc.deleteTask(itemTask),
+            )
           ],
+          child: TextButton(
+            onPressed: () => {
+              widget.onCityTab(
+                itemTask.name.toString(),
+              ),
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  itemTask.name.toString(),
+                  style: GoogleFonts.comfortaa(
+                    fontSize: 28,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+        Divider(
+          height: 4,
+          color: Colors.grey,
+        ),
+      ],
     );
   }
 }
@@ -170,7 +182,7 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
           ),
           actions: [
             Text(
-              bloc.state.msg.tr(),
+              state.msg.tr(),
               style: GoogleFonts.comfortaa(fontSize: 12, color: Colors.black),
             ),
             TextButton(

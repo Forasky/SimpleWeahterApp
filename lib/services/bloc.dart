@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
 
 class ThemeCubit extends Cubit<ThemeState> {
   ThemeCubit()
@@ -92,7 +91,9 @@ class SearchBloc extends Cubit<CityList> {
       cl.items = jsonDecode(text) as List<dynamic>;
     }
     emit(
-      CityList(foundUsers: cl.items),
+      CityList(
+        foundUsers: cl.items,
+      ),
     );
   }
 
