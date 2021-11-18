@@ -165,7 +165,7 @@ class AddingCityPopUp extends StatefulWidget {
 }
 
 class _AddingCityPopUpState extends State<AddingCityPopUp> {
-  TextEditingController cityController = TextEditingController();
+  String value = '';
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +182,7 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
             ],
             // ignore: deprecated_member_use
             label: 'choose city'.tr(),
-            onChanged: (value) => searchBloc.textChanged(value!),
+            onChanged: (value) => changeText(value!),
           ),
           actions: [
             Text(
@@ -191,7 +191,8 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
             ),
             TextButton(
               onPressed: () async {
-                bloc.insertTask(cityController.text);
+                bloc.insertTask(value);
+                searchBloc.resetChanges();
               },
               child: Text('submit').tr(),
             ),
@@ -199,5 +200,10 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
         );
       },
     );
+  }
+
+  void changeText(String text) {
+    searchBloc.textChanged(text);
+    value = text;
   }
 }

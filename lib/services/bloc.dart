@@ -97,6 +97,14 @@ class SearchBloc extends Cubit<CityList> {
     );
   }
 
+  void resetChanges() {
+    emit(
+      CityList(
+        foundUsers: cl.items,
+      ),
+    );
+  }
+
   void textChanged(String text) {
     List<dynamic> results = [];
     if (text.isEmpty) {
