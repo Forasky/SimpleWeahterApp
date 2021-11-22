@@ -1,7 +1,11 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
-import 'package:final_project/services/moor_database.dart';
-import 'package:final_project/services/bloc.dart';
+import 'package:final_project/bloc/database_bloc.dart';
+import 'package:final_project/bloc/search_bloc.dart';
+import 'package:final_project/bloc/theme_bloc.dart';
+import 'package:final_project/models/cityList_model.dart';
+import 'package:final_project/models/theme_model.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -56,7 +60,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       child: TextField(
                         onChanged: (value) => bloc.textChanged(value),
                         decoration: InputDecoration.collapsed(
-                            hintText: 'enter city'.tr()),
+                          hintText: LocalizationKeys.enterCity,
+                        ),
                       ),
                     ),
                   ),
@@ -65,7 +70,7 @@ class _SearchScreenState extends State<SearchScreen> {
               body: state.foundUsers.isEmpty && state.items.isNotEmpty
                   ? Align(
                       alignment: Alignment.center,
-                      child: Text('no data found').tr(),
+                      child: Text(LocalizationKeys.noDataFound),
                     )
                   : (state.foundUsers.isEmpty)
                       ? Align(

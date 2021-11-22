@@ -9,6 +9,7 @@
     "enter name" : "Введите имя пользователя",
     "enter age" : "Введите возраст",
     "choose city" : "Выберите город",
+    "choose language" : "Выберите язык",
     "signup with email" : "Регистрация электронной почтой",
     "signup with google" : "Регистрация Google аккаунтом",
     "login with email" : "Логин электронной почтой",

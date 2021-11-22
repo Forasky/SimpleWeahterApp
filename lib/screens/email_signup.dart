@@ -1,6 +1,8 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
-import 'package:final_project/services/autorization_bloc.dart';
+import 'package:final_project/bloc/autorization_bloc.dart';
+import 'package:final_project/models/autorization_model.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -14,11 +16,20 @@ class EmailSignUp extends StatefulWidget {
 
 class _EmailSignUpState extends State<EmailSignUp> {
   final bloc = GetIt.instance.get<AuthenticationBloc>();
-  bool isLoading = false;
-  TextEditingController emailController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController ageController = TextEditingController();
+  final isLoading = false;
+  final emailController = TextEditingController();
+  final nameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final ageController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    ageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +42,9 @@ class _EmailSignUpState extends State<EmailSignUp> {
           locale: context.locale,
           home: Scaffold(
             appBar: AppBar(
-              title: Text("signup").tr(),
+              title: Text(
+                LocalizationKeys.signUp,
+              ),
             ),
             body: Form(
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -43,17 +56,15 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       child: TextFormField(
                         controller: nameController,
                         decoration: InputDecoration(
-                          labelText: "enter name".tr(),
+                          labelText: LocalizationKeys.enterName,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'enter name'.tr();
-                          }
-                          return null;
-                        },
+                        validator: (value) => bloc.validation(
+                          value ?? '',
+                          'name',
+                        ),
                       ),
                     ),
                     Padding(
@@ -61,19 +72,15 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       child: TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
-                          labelText: "enter Email".tr(),
+                          labelText: LocalizationKeys.enterEmail,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'enter Email'.tr();
-                          } else if (!value.contains('@')) {
-                            return 'please enter Email'.tr();
-                          }
-                          return null;
-                        },
+                        validator: (value) => bloc.validation(
+                          value ?? '',
+                          'email',
+                        ),
                       ),
                     ),
                     Padding(
@@ -81,17 +88,15 @@ class _EmailSignUpState extends State<EmailSignUp> {
                       child: TextFormField(
                         controller: ageController,
                         decoration: InputDecoration(
-                          labelText: "enter age".tr(),
+                          labelText: LocalizationKeys.enterAge,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'enter age'.tr();
-                          }
-                          return null;
-                        },
+                        validator: (value) => bloc.validation(
+                          value ?? '',
+                          'age',
+                        ),
                       ),
                     ),
                     Padding(
@@ -100,19 +105,15 @@ class _EmailSignUpState extends State<EmailSignUp> {
                         obscureText: true,
                         controller: passwordController,
                         decoration: InputDecoration(
-                          labelText: "enter password".tr(),
+                          labelText: LocalizationKeys.enterPassword,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'enter password'.tr();
-                          } else if (value.length < 6) {
-                            return 'please enter password'.tr();
-                          }
-                          return null;
-                        },
+                        validator: (value) => bloc.validation(
+                          value ?? '',
+                          'password',
+                        ),
                       ),
                     ),
                     Padding(
@@ -143,13 +144,17 @@ class _EmailSignUpState extends State<EmailSignUp> {
                                       );
                                     else {
                                       AlertDialog(
-                                        title: Text("error").tr(),
+                                        title: Text(
+                                          LocalizationKeys.error,
+                                        ),
                                         content: Text(
-                                          state.message.toString().tr(),
+                                          state.message,
                                         ),
                                         actions: [
                                           ElevatedButton(
-                                            child: Text("submit").tr(),
+                                            child: Text(
+                                              LocalizationKeys.submit,
+                                            ),
                                             onPressed: () {
                                               Navigator.of(context).pop();
                                             },
@@ -158,11 +163,13 @@ class _EmailSignUpState extends State<EmailSignUp> {
                                       );
                                     }
                                   },
-                                  child: Text('submit').tr(),
+                                  child: Text(
+                                    LocalizationKeys.submit,
+                                  ),
                                 ),
                                 Spacer(),
                                 Text(
-                                  state.message.tr(),
+                                  state.message,
                                 ),
                               ],
                             ),
@@ -175,14 +182,5 @@ class _EmailSignUpState extends State<EmailSignUp> {
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    ageController.dispose();
   }
 }

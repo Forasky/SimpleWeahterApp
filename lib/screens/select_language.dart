@@ -1,9 +1,11 @@
-import 'dart:developer';
-
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class LanguageView extends StatelessWidget {
+  final english ='English';
+  final russian = 'Русский';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +29,7 @@ class LanguageView extends StatelessWidget {
                 horizontal: 24,
               ),
               child: Text(
-                'Choose language',
+                LocalizationKeys.chooseLanguage,
                 style: TextStyle(
                   color: Colors.blue,
                   fontFamily: 'Montserrat',
@@ -38,13 +40,13 @@ class LanguageView extends StatelessWidget {
             ),
             _Divider(),
             _SwitchListTileMenuItem(
-                title: 'English',
-                subtitle: 'English',
+                title: english,
+                subtitle: english,
                 locale: context.supportedLocales[0]),
             _Divider(),
             _SwitchListTileMenuItem(
-                title: 'Русский',
-                subtitle: 'Русский',
+                title: russian,
+                subtitle: russian,
                 locale: context.supportedLocales[1]),
             _Divider(),
           ],
@@ -94,7 +96,6 @@ class _SwitchListTileMenuItem extends StatelessWidget {
       ),
       child: ListTile(
         dense: true,
-        // isThreeLine: true,
         title: Text(
           title,
         ),
@@ -102,7 +103,6 @@ class _SwitchListTileMenuItem extends StatelessWidget {
           subtitle,
         ),
         onTap: () async {
-          log(locale.toString(), name: toString());
           await context.setLocale(locale);
           Navigator.pop(context);
         },

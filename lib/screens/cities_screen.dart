@@ -1,7 +1,11 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
+import 'package:final_project/bloc/database_bloc.dart';
+import 'package:final_project/bloc/theme_bloc.dart';
+import 'package:final_project/models/database_model.dart';
+import 'package:final_project/models/theme_model.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:final_project/services/moor_database.dart';
-import 'package:final_project/services/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -11,8 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
-final bloc = GetIt.instance.get<DatabaseBloc>();
-final searchBloc = GetIt.instance.get<SearchBloc>();
+  final bloc = GetIt.instance.get<DatabaseBloc>();
 
 class CityScreen extends StatefulWidget {
   final ValueChanged<String> onCityTab;
@@ -26,40 +29,39 @@ class _CityScreenState extends State<CityScreen> {
   @override
   void initState() {
     super.initState();
-    if (searchBloc.state.foundUsers.isEmpty) searchBloc.getText();
+    if (bloc.state.listCity.isEmpty) bloc.getText();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      localizationsDelegates: context.localizationDelegates,
-      supportedLocales: context.supportedLocales,
-      locale: context.locale,
-      themeMode: context.watch<ThemeCubit>().state.theme,
-      theme: MyTheme.lightTheme,
-      darkTheme: MyTheme.darkTheme,
-      home: Column(
-        children: <Widget>[
-          Expanded(
-            child: _buildTaskList(context),
+    return BlocBuilder<DatabaseBloc, DatabaseBlocState>(
+      builder: (context, state) {
+        return MaterialApp(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          themeMode: context.watch<ThemeCubit>().state.theme,
+          theme: MyTheme.lightTheme,
+          darkTheme: MyTheme.darkTheme,
+          home: Column(
+            children: <Widget>[
+              Expanded(
+                child: _buildTaskList(context, bloc),
+              ),
+              AddCity(),
+            ],
           ),
-          AddCity(),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  StreamBuilder<List<Task>> _buildTaskList(BuildContext context) {
+  StreamBuilder<List<Task>> _buildTaskList(
+      BuildContext context, DatabaseBloc bloc) {
     return StreamBuilder(
       stream: bloc.datebase.watchAllTasks(),
       builder: (context, snapshot) {
         if (!snapshot.hasData &&
-            snapshot.connectionState == ConnectionState.active)
-          return Align(
-            alignment: Alignment.center,
-            child: Text('add city').tr(),
-          );
-        else if (!snapshot.hasData &&
             snapshot.connectionState == ConnectionState.waiting) {
           return Align(
             alignment: Alignment.center,
@@ -71,30 +73,50 @@ class _CityScreenState extends State<CityScreen> {
           itemCount: tasks!.length,
           itemBuilder: (context, index) {
             final itemTask = tasks[index];
-            return _buildListItem(itemTask, bloc);
+            return _BuildListItem(
+              itemTask: itemTask,
+              onTap: (Task task) => bloc.deleteTask(task),
+              onPressed: (Task task) => widget.onCityTab(
+                task.name.toString(),
+              ),
+            );
           },
         );
       },
     );
   }
+}
 
-  Widget _buildListItem(Task itemTask, DatabaseBloc bloc) {
+class _BuildListItem extends StatelessWidget {
+  final Function(Task) onTap;
+  final Function(Task) onPressed;
+  final itemTask;
+
+  const _BuildListItem({
+    Key? key,
+    required this.itemTask,
+    required this.onTap,
+    required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Slidable(
           actionPane: SlidableDrawerActionPane(),
           secondaryActions: <Widget>[
             IconSlideAction(
-              caption: 'delete'.tr(),
+              caption: LocalizationKeys.delete,
               color: Colors.red,
               icon: Icons.delete,
-              onTap: () => bloc.deleteTask(itemTask),
+              onTap: () => onTap(itemTask),
             )
           ],
           child: TextButton(
             onPressed: () => {
-              widget.onCityTab(
-                itemTask.name.toString(),
+              onPressed(
+                itemTask,
               ),
             },
             child: Row(
@@ -138,7 +160,7 @@ class _AddCityState extends State<AddCity> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Text(
-                  'add'.tr(),
+                  LocalizationKeys.add,
                   style: TextStyle(fontSize: 18),
                 ),
                 FaIcon(
@@ -148,11 +170,10 @@ class _AddCityState extends State<AddCity> {
               ],
             ),
           ),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => AddingCityPopUp());
-          },
+          onPressed: () => showDialog(
+            context: context,
+            builder: (BuildContext context) => AddingCityPopUp(),
+          ),
         ),
       ),
     );
@@ -165,11 +186,11 @@ class AddingCityPopUp extends StatefulWidget {
 }
 
 class _AddingCityPopUpState extends State<AddingCityPopUp> {
-  String addingCity = '';
+  late String addingCity;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DatabaseBloc, AppDatebase>(
+    return BlocBuilder<DatabaseBloc, DatabaseBlocState>(
       bloc: bloc,
       builder: (context, state) {
         return AlertDialog(
@@ -177,27 +198,29 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
             showSearchBox: true,
             mode: Mode.BOTTOM_SHEET,
             items: [
-              for (int i = 0; i < searchBloc.state.foundUsers.length; i++)
-                searchBloc.state.foundUsers[i]['name'],
+              ...state.listCity,
             ],
-            // ignore: deprecated_member_use
-            label: 'choose city'.tr(),
+            dropdownSearchDecoration: InputDecoration(
+              hintText: LocalizationKeys.chooseCity,
+            ),
             onChanged: (value) {
-              searchBloc.textChanged(value!);
-              addingCity = value;
+              bloc.textChanged(value ?? '');
+              addingCity = value ?? '';
             },
           ),
           actions: [
             Text(
-              state.msg.tr(),
+              state.message,
               style: GoogleFonts.comfortaa(fontSize: 12, color: Colors.black),
             ),
             TextButton(
               onPressed: () async {
                 bloc.insertTask(addingCity);
-                searchBloc.resetChanges();
+                bloc.resetChanges();
               },
-              child: Text('submit').tr(),
+              child: Text(
+                LocalizationKeys.submit,
+              ),
             ),
           ],
         );

@@ -1,10 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:final_project/bloc/theme_bloc.dart';
+import 'package:final_project/bloc/weather_bloc.dart';
+import 'package:final_project/models/weather_model.dart';
 import 'package:final_project/services/helping_classes.dart';
-import 'package:final_project/services/weather_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:final_project/services/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -63,9 +64,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             background: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _showWeather(
-                                  state.current.temp,
-                                  state.current.weather.first.icon,
+                                _ShowWeather(
+                                  temp: state.current.temp,
+                                  icon: state.current.weather.first.icon,
                                 ),
                                 Text(
                                   state.current.weather.first.description
@@ -76,7 +77,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 Padding(
                                   padding: EdgeInsets.only(top: 10),
                                   child: Text(
-                                    'feelsLike'.tr() +
+                                    LocalizationKeys.feelLike +
                                         state.current.feelsLike
                                             .toStringAsFixed(1) +
                                         '°',
@@ -147,24 +148,24 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
                                     children: [
-                                      _weatherContainer(
-                                        state.current.humidity,
-                                        'humidity'.tr(),
-                                        Icon(
+                                      _WeatherContainer(
+                                        value: state.current.humidity,
+                                        someText: LocalizationKeys.humidity,
+                                        icon: Icon(
                                           FontAwesomeIcons.tint,
                                         ),
                                       ),
-                                      _weatherContainer(
-                                        state.current.windSpeed,
-                                        'speedw'.tr(),
-                                        Icon(
+                                      _WeatherContainer(
+                                        value: state.current.windSpeed,
+                                        someText: LocalizationKeys.speedWind,
+                                        icon: Icon(
                                           FontAwesomeIcons.wind,
                                         ),
                                       ),
-                                      _weatherContainer(
-                                        state.current.pressure,
-                                        'pressure'.tr(),
-                                        Icon(
+                                      _WeatherContainer(
+                                        value: state.current.pressure,
+                                        someText: LocalizationKeys.pressure,
+                                        icon: Icon(
                                           FontAwesomeIcons.sortAmountDownAlt,
                                         ),
                                       ),
@@ -243,12 +244,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   width: MediaQuery.of(context).size.width,
                                   color: Colors.white,
                                   child: Text(
-                                    'last updated'.tr(
-                                      args: [
-                                        DateFormat.jm()
-                                            .format(state.current.dt),
-                                      ],
-                                    ),
+                                    LocalizationKeys.lastUpdated(
+                                        state.current.dt),
                                     style: GoogleFonts.comfortaa(
                                         fontSize: 15,
                                         decoration: TextDecoration.none,
@@ -267,7 +264,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text('wait', style: GoogleFonts.comfortaa(fontSize: 24))
+                        Text(LocalizationKeys.wait,
+                                style: GoogleFonts.comfortaa(fontSize: 24))
                             .tr(),
                         CircularProgressIndicator(),
                       ],
@@ -280,51 +278,76 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 }
 
-Widget _weatherContainer(var value, var someText, var icon) {
-  return Container(
-    alignment: Alignment.center,
-    height: 100,
-    width: 120,
-    decoration: BoxDecoration(
-      color: Colors.transparent,
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        icon,
-        Text(
-          someText.toString(),
-          style: GoogleFonts.comfortaa(
-            fontSize: 15,
-            color: Colors.black,
+class _WeatherContainer extends StatelessWidget {
+  final value;
+  final someText;
+  final icon;
+
+  const _WeatherContainer({
+    Key? key,
+    required this.value,
+    required this.someText,
+    required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      height: 100,
+      width: 120,
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          icon,
+          Text(
+            someText.toString(),
+            style: GoogleFonts.comfortaa(
+              fontSize: 15,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          value.toString(),
-          style: GoogleFonts.comfortaa(
-            fontSize: 18,
-            color: Colors.black,
+          Text(
+            value.toString(),
+            style: GoogleFonts.comfortaa(
+              fontSize: 18,
+              color: Colors.black,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
-Widget _showWeather(var temp, var icon) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        temp.toStringAsFixed(1).toString() + '°',
-        style: GoogleFonts.comfortaa(fontSize: 35),
-        textAlign: TextAlign.center,
-      ),
-      Image(
-        image: NetworkImage('http://openweathermap.org/img/wn/$icon@2x.png'),
-      ),
-    ],
-  );
+class _ShowWeather extends StatelessWidget {
+  final temp;
+  final icon;
+  const _ShowWeather({
+    Key? key,
+    required this.temp,
+    required this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          temp.toStringAsFixed(1).toString() + '°',
+          style: GoogleFonts.comfortaa(fontSize: 35),
+          textAlign: TextAlign.center,
+        ),
+        Image(
+          image: NetworkImage('http://openweathermap.org/img/wn/$icon@2x.png'),
+        ),
+      ],
+    );
+  }
 }

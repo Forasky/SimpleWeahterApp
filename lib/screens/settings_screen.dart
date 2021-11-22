@@ -1,9 +1,13 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
+import 'package:final_project/bloc/autorization_bloc.dart';
+import 'package:final_project/bloc/change_temp_bloc.dart';
+import 'package:final_project/bloc/theme_bloc.dart';
+import 'package:final_project/models/change_temp_model.dart';
+import 'package:final_project/models/theme_model.dart';
 import 'package:final_project/screens/select_language.dart';
 import 'package:final_project/screens/signup.dart';
-import 'package:final_project/services/autorization_bloc.dart';
-import 'package:final_project/services/bloc.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -130,12 +134,12 @@ class _SettingScreenState extends State<SettingScreen> {
                             );
                           },
                           child: Text(
-                            'logout',
+                            LocalizationKeys.logout,
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.black87,
                             ),
-                          ).tr(),
+                          ),
                         ),
                       ),
                     ],
@@ -152,12 +156,12 @@ class _SettingScreenState extends State<SettingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          'swchTh',
+                          LocalizationKeys.switchTheme,
                           style: GoogleFonts.comfortaa(
                             fontSize: 16,
                             color: Colors.black,
                           ),
-                        ).tr(),
+                        ),
                         _ChangeButton(),
                       ],
                     ),
@@ -174,12 +178,12 @@ class _SettingScreenState extends State<SettingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          'swchTemp',
+                          LocalizationKeys.switchTemp,
                           style: GoogleFonts.comfortaa(
                             fontSize: 16,
                             color: Colors.black,
                           ),
-                        ).tr(),
+                        ),
                         ChngTepmButton(),
                       ],
                     ),
@@ -196,12 +200,12 @@ class _SettingScreenState extends State<SettingScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          'change language',
+                          LocalizationKeys.chooseLanguage,
                           style: GoogleFonts.comfortaa(
                             fontSize: 16,
                             color: Colors.black,
                           ),
-                        ).tr(),
+                        ),
                         Icon(
                           Icons.language,
                           color: Colors.black,

@@ -1,7 +1,9 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
+import 'package:final_project/bloc/autorization_bloc.dart';
+import 'package:final_project/models/autorization_model.dart';
 import 'package:final_project/screens/main_screen.dart';
-import 'package:final_project/services/autorization_bloc.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -12,11 +14,18 @@ class EmailLogIn extends StatefulWidget {
 }
 
 class _EmailLogInState extends State<EmailLogIn> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final bloc = GetIt.instance.get<AuthenticationBloc>();
 
-  bool isLoading = false;
+  final isLoading = false;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +38,9 @@ class _EmailLogInState extends State<EmailLogIn> {
           locale: context.locale,
           home: Scaffold(
             appBar: AppBar(
-              title: Text("login").tr(),
+              title: Text(
+                LocalizationKeys.login,
+              ),
             ),
             body: Form(
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -41,19 +52,15 @@ class _EmailLogInState extends State<EmailLogIn> {
                       child: TextFormField(
                         controller: emailController,
                         decoration: InputDecoration(
-                          labelText: "enter Email".tr(),
+                          labelText: LocalizationKeys.enterEmail,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'enter Email'.tr();
-                          } else if (!value.contains('@')) {
-                            return 'please enter Email'.tr();
-                          }
-                          return null;
-                        },
+                        validator: (value) => bloc.validation(
+                          value ?? '',
+                          'email',
+                        ),
                       ),
                     ),
                     Padding(
@@ -62,19 +69,15 @@ class _EmailLogInState extends State<EmailLogIn> {
                         obscureText: true,
                         controller: passwordController,
                         decoration: InputDecoration(
-                          labelText: "enter password".tr(),
+                          labelText: LocalizationKeys.enterPassword,
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'enter password'.tr();
-                          } else if (value.length < 6) {
-                            return 'please enter password'.tr();
-                          }
-                          return null;
-                        },
+                        validator: (value) => bloc.validation(
+                          value ?? '',
+                          'password',
+                        ),
                       ),
                     ),
                     Padding(
@@ -103,11 +106,16 @@ class _EmailLogInState extends State<EmailLogIn> {
                                       );
                                     else {
                                       AlertDialog(
-                                        title: Text("error").tr(),
-                                        content: Text(state.message.toString().tr()),
+                                        title: Text(
+                                          LocalizationKeys.error,
+                                        ),
+                                        content:
+                                            Text(state.message.toString().tr()),
                                         actions: [
                                           ElevatedButton(
-                                            child: Text("submit").tr(),
+                                            child: Text(
+                                              LocalizationKeys.submit,
+                                            ),
                                             onPressed: () {
                                               Navigator.of(context).pop();
                                             },
@@ -116,11 +124,13 @@ class _EmailLogInState extends State<EmailLogIn> {
                                       );
                                     }
                                   },
-                                  child: Text('submit').tr(),
+                                  child: Text(
+                                    LocalizationKeys.submit,
+                                  ),
                                 ),
                                 Spacer(),
                                 Text(
-                                  state.message.tr(),
+                                  state.message,
                                 ),
                               ],
                             ),

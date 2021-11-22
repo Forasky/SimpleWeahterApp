@@ -1,7 +1,8 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
+import 'package:final_project/bloc/autorization_bloc.dart';
 import 'package:final_project/screens/main_screen.dart';
-import 'package:final_project/services/autorization_bloc.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:get_it/get_it.dart';
@@ -11,7 +12,7 @@ import 'email_signup.dart';
 
 class SignUp extends StatelessWidget {
   final auth = GetIt.instance.get<AuthenticationBloc>();
-  final String title = "signup";
+  final String title = LocalizationKeys.signUp;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class SignUp extends StatelessWidget {
                 padding: EdgeInsets.all(10.0),
                 child: SignInButton(
                   Buttons.Email,
-                  text: "signup with email".tr(),
+                  text: LocalizationKeys.singupWithEmail,
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -54,7 +55,7 @@ class SignUp extends StatelessWidget {
                 padding: EdgeInsets.all(10.0),
                 child: SignInButton(
                   Buttons.Google,
-                  text: "signup with google".tr(),
+                  text: LocalizationKeys.singupWithGoogle,
                   onPressed: () async {
                     await auth.signInWithGoogle();
                     if (auth.state.isLogin) {
@@ -69,10 +70,12 @@ class SignUp extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: GestureDetector(
-                  child: Text("login with email".tr(),
-                      style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          color: Colors.blue)),
+                  child: Text(
+                    LocalizationKeys.loginWithEmail,
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.blue),
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,

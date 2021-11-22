@@ -1,10 +1,13 @@
 // ignore: implementation_imports
 import 'package:easy_localization/src/public_ext.dart';
+import 'package:final_project/bloc/change_temp_bloc.dart';
+import 'package:final_project/bloc/theme_bloc.dart';
+import 'package:final_project/models/theme_model.dart';
 import 'package:final_project/screens/cities_screen.dart';
 import 'package:final_project/screens/search_screen.dart';
 import 'package:final_project/screens/settings_screen.dart';
 import 'package:final_project/screens/weather_screen.dart';
-import 'package:final_project/services/bloc.dart';
+import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -24,7 +27,7 @@ class AdminPage extends StatefulWidget {
 
 class AdminPageState extends State<AdminPage>
     with SingleTickerProviderStateMixin {
-  TextEditingController cityController = TextEditingController();
+  final cityController = TextEditingController();
   int currentIndex = 0;
   String ciName = 'Minsk';
 
@@ -35,6 +38,7 @@ class AdminPageState extends State<AdminPage>
 
   @override
   void dispose() {
+    cityController.dispose();
     super.dispose();
   }
 
@@ -89,21 +93,21 @@ class AdminPageState extends State<AdminPage>
               items: [
                 BottomNavigationBarItem(
                   icon: FaIcon(FontAwesomeIcons.cloud),
-                  label: 'weather'.tr(),
+                  label: LocalizationKeys.weather,
                   backgroundColor: Colors.blueAccent,
                 ),
                 BottomNavigationBarItem(
                   icon: FaIcon(FontAwesomeIcons.city),
-                  label: 'city'.tr(),
+                  label: LocalizationKeys.city,
                   backgroundColor: Colors.grey,
                 ),
                 BottomNavigationBarItem(
                     icon: FaIcon(FontAwesomeIcons.search),
-                    label: 'search'.tr(),
+                    label: LocalizationKeys.search,
                     backgroundColor: Colors.purple),
                 BottomNavigationBarItem(
                   icon: FaIcon(FontAwesomeIcons.cogs),
-                  label: 'settings'.tr(),
+                  label: LocalizationKeys.settings,
                   backgroundColor: Colors.redAccent,
                 )
               ],

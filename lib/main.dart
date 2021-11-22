@@ -1,16 +1,23 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:final_project/models/database_model.dart';
 import 'package:final_project/screens/main_screen.dart';
 import 'package:final_project/screens/signup.dart';
-import 'package:final_project/services/autorization_bloc.dart';
-import 'package:final_project/services/moor_database.dart';
-import 'package:final_project/services/bloc.dart';
-import 'package:final_project/services/weather_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'bloc/autorization_bloc.dart';
+import 'bloc/change_temp_bloc.dart';
+import 'bloc/database_bloc.dart';
+import 'bloc/search_bloc.dart';
+import 'bloc/theme_bloc.dart';
+import 'bloc/weather_bloc.dart';
+import 'models/autorization_model.dart';
+import 'models/cityList_model.dart';
+import 'models/weather_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +49,11 @@ void main() async {
     ),
   );
   GetIt.instance.registerSingleton<DatabaseBloc>(
-    DatabaseBloc(''),
+    DatabaseBloc(
+      DatabaseBlocState(
+        message: '',
+      ),
+    ),
   );
   GetIt.instance.registerSingleton<AuthenticationBloc>(
     AuthenticationBloc(
@@ -72,6 +83,13 @@ class MyApp extends StatelessWidget {
             Credits(
               message: '',
               isLogin: false,
+            ),
+          ),
+        ),
+        BlocProvider<DatabaseBloc>(
+          create: (context) => DatabaseBloc(
+            DatabaseBlocState(
+              message: '',
             ),
           ),
         ),
