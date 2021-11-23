@@ -33,7 +33,7 @@ class _EmailSignUpState extends State<EmailSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationBloc, Credits>(
+    return BlocBuilder<AuthenticationBloc, AuthenticationBlocState>(
       bloc: bloc,
       builder: (context, state) {
         return MaterialApp(

@@ -1,5 +1,5 @@
-class Credits {
-  Credits({
+class AuthenticationBlocState {
+  AuthenticationBlocState({
     required this.message,
     required this.isLogin,
     this.userName,

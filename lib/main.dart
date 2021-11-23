@@ -16,7 +16,7 @@ import 'bloc/search_bloc.dart';
 import 'bloc/theme_bloc.dart';
 import 'bloc/weather_bloc.dart';
 import 'models/autorization_model.dart';
-import 'models/cityList_model.dart';
+import 'models/searchBloc_model.dart';
 import 'models/weather_model.dart';
 
 void main() async {
@@ -45,7 +45,7 @@ void main() async {
   );
   GetIt.instance.registerSingleton<SearchBloc>(
     SearchBloc(
-      CityList(),
+      SearchBlocState(),
     ),
   );
   GetIt.instance.registerSingleton<DatabaseBloc>(
@@ -57,7 +57,7 @@ void main() async {
   );
   GetIt.instance.registerSingleton<AuthenticationBloc>(
     AuthenticationBloc(
-      Credits(
+      AuthenticationBlocState(
         message: '',
         isLogin: false,
       ),
@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthenticationBloc>(
           create: (context) => AuthenticationBloc(
-            Credits(
+            AuthenticationBlocState(
               message: '',
               isLogin: false,
             ),

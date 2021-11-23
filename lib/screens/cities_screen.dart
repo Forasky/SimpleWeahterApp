@@ -15,7 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
-  final bloc = GetIt.instance.get<DatabaseBloc>();
+final bloc = GetIt.instance.get<DatabaseBloc>();
 
 class CityScreen extends StatefulWidget {
   final ValueChanged<String> onCityTab;
@@ -37,6 +37,7 @@ class _CityScreenState extends State<CityScreen> {
     return BlocBuilder<DatabaseBloc, DatabaseBlocState>(
       builder: (context, state) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
@@ -194,20 +195,22 @@ class _AddingCityPopUpState extends State<AddingCityPopUp> {
       bloc: bloc,
       builder: (context, state) {
         return AlertDialog(
-          content: DropdownSearch<String>(
-            showSearchBox: true,
-            mode: Mode.BOTTOM_SHEET,
-            items: [
-              ...state.listCity,
-            ],
-            dropdownSearchDecoration: InputDecoration(
-              hintText: LocalizationKeys.chooseCity,
-            ),
-            onChanged: (value) {
-              bloc.textChanged(value ?? '');
-              addingCity = value ?? '';
-            },
-          ),
+          content: state.listCity.isNotEmpty
+              ? DropdownSearch<String>(
+                  showSearchBox: true,
+                  mode: Mode.BOTTOM_SHEET,
+                  items: [
+                    ...state.listCity,
+                  ],
+                  dropdownSearchDecoration: InputDecoration(
+                    hintText: LocalizationKeys.chooseCity,
+                  ),
+                  onChanged: (value) {
+                    bloc.textChanged(value ?? '');
+                    addingCity = value ?? '';
+                  },
+                )
+              : CircularProgressIndicator(),
           actions: [
             Text(
               state.message,

@@ -3,7 +3,7 @@ import 'package:easy_localization/src/public_ext.dart';
 import 'package:final_project/bloc/database_bloc.dart';
 import 'package:final_project/bloc/search_bloc.dart';
 import 'package:final_project/bloc/theme_bloc.dart';
-import 'package:final_project/models/cityList_model.dart';
+import 'package:final_project/models/searchBloc_model.dart';
 import 'package:final_project/models/theme_model.dart';
 import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +38,11 @@ class _SearchScreenState extends State<SearchScreen> {
           create: (context) => ThemeCubit(),
         ),
       ],
-      child: BlocBuilder<SearchBloc, CityList>(
+      child: BlocBuilder<SearchBloc, SearchBlocState>(
         bloc: bloc,
         builder: (context, state) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,

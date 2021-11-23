@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'model.dart';
+part of 'cityList_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Model _$ModelFromJson(Map<String, dynamic> json) => Model(
+CityList _$CityListFromJson(Map<String, dynamic> json) => CityList(
       city: (json['city'] as List<dynamic>)
           .map((e) => City.fromJson(e as Map<String, dynamic>))
           .toList(),

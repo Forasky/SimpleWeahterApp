@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:final_project/models/database_model.dart';
-import 'package:final_project/models/model.dart';
+import 'package:final_project/models/cityList_model.dart';
 import 'package:final_project/services/helping_classes.dart';
 import 'package:final_project/services/moor_database.dart';
 import 'package:flutter/services.dart';
@@ -67,7 +67,7 @@ class DatabaseBloc extends Cubit<DatabaseBlocState> {
     if (items.isEmpty) {
       final text = await rootBundle.loadString('assets/cities/city.json');
       Map<String, dynamic> json = await jsonDecode(text);
-      final model = Model.fromJson(json);
+      final model = CityList.fromJson(json);
       model.city.forEach(
         (e) => items.add(e.name),
       );

@@ -5,8 +5,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthenticationBloc extends Cubit<Credits> {
-  AuthenticationBloc(Credits initialState) : super(initialState);
+class AuthenticationBloc extends Cubit<AuthenticationBlocState> {
+  AuthenticationBloc(AuthenticationBlocState initialState) : super(initialState);
 
   Future signUp(String email, String password, String age, String name) async {
     try {
@@ -19,7 +19,7 @@ class AuthenticationBloc extends Cubit<Credits> {
           {"email": email, "age": age, "name": name},
         );
         emit(
-          Credits(
+          AuthenticationBlocState(
             message: '',
             isLogin: true,
             userName: name,
@@ -50,7 +50,7 @@ class AuthenticationBloc extends Cubit<Credits> {
     final result = FirebaseAuth.instance.currentUser;
     if (result != null)
       emit(
-        Credits(
+        AuthenticationBlocState(
           message: '',
           isLogin: true,
           eMail: result.email,
@@ -65,7 +65,7 @@ class AuthenticationBloc extends Cubit<Credits> {
           .signInWithEmailAndPassword(email: email, password: password);
       if (result.user?.uid != null) {
         emit(
-          Credits(
+          AuthenticationBlocState(
             isLogin: true,
             message: '',
             eMail: result.user?.email,
@@ -102,7 +102,7 @@ class AuthenticationBloc extends Cubit<Credits> {
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         emit(
-          Credits(
+          AuthenticationBlocState(
             isLogin: true,
             message: '',
             eMail: user.email,
@@ -119,7 +119,7 @@ class AuthenticationBloc extends Cubit<Credits> {
 
   void setFalse(String message) {
     emit(
-      Credits(
+      AuthenticationBlocState(
         message: message,
         isLogin: false,
       ),
@@ -127,7 +127,7 @@ class AuthenticationBloc extends Cubit<Credits> {
     Future.delayed(
       const Duration(seconds: 3),
       () => emit(
-        Credits(
+        AuthenticationBlocState(
           isLogin: false,
           message: '',
         ),
