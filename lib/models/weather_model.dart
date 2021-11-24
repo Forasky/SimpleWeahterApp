@@ -2,6 +2,15 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'weather_model.g.dart';
 
+class WeatherBlocState {
+  WeatherBlocState({
+    required this.temperature,
+    required this.currentCity,
+  });
+  final Temperature temperature;
+  final String currentCity;
+}
+
 @JsonSerializable()
 class Temperature {
   Temperature({
@@ -15,6 +24,7 @@ class Temperature {
   final List<Current> hourly;
   final List<Daily> daily;
   final bool hasData;
+  final String message = '';
 
   factory Temperature.fromJson(Map<String, dynamic> json) =>
       _$TemperatureFromJson(json);

@@ -28,18 +28,21 @@ void main() async {
   );
   GetIt.instance.registerSingleton<TempBloc>(
     TempBloc(
-      Temperature(
-        current: Current(
-            dt: DateTime.now(),
-            feelsLike: 0,
-            humidity: 0,
-            pressure: 0,
-            temp: 0,
-            weather: [],
-            windSpeed: 0),
-        daily: [],
-        hasData: false,
-        hourly: [],
+      WeatherBlocState(
+        temperature: Temperature(
+          current: Current(
+              dt: DateTime.now(),
+              feelsLike: 0,
+              humidity: 0,
+              pressure: 0,
+              temp: 0,
+              weather: [],
+              windSpeed: 0),
+          daily: [],
+          hasData: false,
+          hourly: [],
+        ),
+        currentCity: '',
       ),
     ),
   );

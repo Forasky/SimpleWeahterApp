@@ -86,4 +86,6 @@ class LocalizationKeys {
       );
 
   static String wait = 'wait'.tr();
+
+  static String yourLocation = 'ur location'.tr();
 }

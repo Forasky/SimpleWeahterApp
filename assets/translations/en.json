@@ -64,5 +64,6 @@
     "incorrect user": "User is incorrect.",
     "incorrect password": "The password is incorrect",
     "account exist": "The account already exists for that email.",
-    "no found": "User is not found."
+    "no found": "User is not found.",
+    "ur location": "Your location"
 }
