@@ -39,6 +39,20 @@ class TempBloc extends Cubit<WeatherBlocState> {
     );
   }
 
+  Future getTemperatureFormMap(double lat, double lon, String locale) async {
+    final url =
+        '$adress/onecall?lat=$lat&lon=$lon&exclude=minutely&appid=$_api&units=${getit.state.temp}';
+    final result = await http.get(Uri.parse(url));
+    emit(
+      WeatherBlocState(
+        temperature: Temperature.fromJson(
+          jsonDecode(result.body),
+        ),
+        currentCity: LocalizationKeys.locationFromMap,
+      ),
+    );
+  }
+
   void getCurrentPosition() async {
     bool serviceEnabled;
     LocationPermission permission;

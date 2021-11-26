@@ -4,6 +4,7 @@ import 'package:final_project/bloc/change_temp_bloc.dart';
 import 'package:final_project/bloc/theme_bloc.dart';
 import 'package:final_project/models/theme_model.dart';
 import 'package:final_project/screens/cities_screen.dart';
+import 'package:final_project/screens/map_screen.dart';
 import 'package:final_project/screens/search_screen.dart';
 import 'package:final_project/screens/settings_screen.dart';
 import 'package:final_project/screens/weather_screen.dart';
@@ -11,6 +12,7 @@ import 'package:final_project/services/helping_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatelessWidget {
@@ -30,6 +32,8 @@ class AdminPageState extends State<AdminPage>
   final cityController = TextEditingController();
   int currentIndex = 0;
   String ciName = 'Minsk';
+  double lat = 0;
+  double lon = 0; 
 
   @override
   void initState() {
@@ -52,16 +56,29 @@ class AdminPageState extends State<AdminPage>
     if (index == 0)
       return WeatherScreen(
         cityName: ciName,
+        lat: lat,
+        lon: lon,
       );
     if (index == 1) return CityScreen(onCityTab: _navigateToHome);
     if (index == 2) return SearchScreen(onCityTab: _navigateToHome);
+    if (index == 3) return MapSample(onLocationTab: _naviagateToHomeLocation);
     return BlocProvider(
         create: (_) => ChangeTempBloc(), child: SettingScreen());
   }
 
   void _navigateToHome(String city) {
     setState(() {
+      lat = 0;
+      lon = 0;
       ciName = city;
+      currentIndex = 0;
+    });
+  }
+
+  void _naviagateToHomeLocation(LatLng pos) {
+    setState(() {
+      lat=pos.latitude;
+      lon=pos.longitude;
       currentIndex = 0;
     });
   }
@@ -78,42 +95,47 @@ class AdminPageState extends State<AdminPage>
         ),
       ],
       child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          themeMode: context.watch<ThemeCubit>().state.theme,
-          theme: MyTheme.lightTheme,
-          darkTheme: MyTheme.darkTheme,
-          home: Scaffold(
-            body: _getPage(currentIndex),
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) => _setPage(index),
-              items: [
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.cloud),
-                  label: LocalizationKeys.weather,
-                  backgroundColor: Colors.blueAccent,
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.city),
-                  label: LocalizationKeys.city,
-                  backgroundColor: Colors.grey,
-                ),
-                BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.search),
-                    label: LocalizationKeys.search,
-                    backgroundColor: Colors.purple),
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.cogs),
-                  label: LocalizationKeys.settings,
-                  backgroundColor: Colors.redAccent,
-                )
-              ],
-            ),
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        themeMode: context.watch<ThemeCubit>().state.theme,
+        theme: MyTheme.lightTheme,
+        darkTheme: MyTheme.darkTheme,
+        home: Scaffold(
+          body: _getPage(currentIndex),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: currentIndex,
+            onTap: (index) => _setPage(index),
+            items: [
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.cloud),
+                label: LocalizationKeys.weather,
+                backgroundColor: Colors.blueAccent,
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.city),
+                label: LocalizationKeys.city,
+                backgroundColor: Colors.grey,
+              ),
+              BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.search),
+                  label: LocalizationKeys.search,
+                  backgroundColor: Colors.purple),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.mapMarkedAlt),
+                label: LocalizationKeys.map,
+                backgroundColor: Colors.green,
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.cogs),
+                label: LocalizationKeys.settings,
+                backgroundColor: Colors.redAccent,
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

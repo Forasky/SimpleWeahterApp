@@ -16,6 +16,7 @@
     "weather": "Weather",
     "city": "Cities",
     "search": "Search",
+    "map" : "Map",
     "settings": "Settings",
     "now in": "Now in",
     "check": "Check your Internet connection",
@@ -65,5 +66,8 @@
     "incorrect password": "The password is incorrect",
     "account exist": "The account already exists for that email.",
     "no found": "User is not found.",
-    "ur location": "Your location"
+    "ur location": "Your location",
+    "weather map" : "Weather Map",
+    "get weather" : "Get weather",
+    "location map" : "Location from map"
 }

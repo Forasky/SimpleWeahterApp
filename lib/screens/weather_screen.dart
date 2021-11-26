@@ -12,22 +12,36 @@ import 'package:intl/intl.dart';
 
 class WeatherScreen extends StatefulWidget {
   final String cityName;
-  WeatherScreen({required this.cityName, Key? key}) : super(key: key);
+  final double lat;
+  final double lon;
+  WeatherScreen({
+    required this.cityName,
+    this.lat = 0,
+    this.lon = 0,
+    Key? key,
+  }) : super(key: key);
   @override
   _WeatherScreenState createState() => _WeatherScreenState();
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
   final tempbloc = GetIt.instance.get<TempBloc>();
-  final Images images = Images();
+  final images = Images();
 
   @override
   void initState() {
     super.initState();
-    tempbloc.getTemperatureNow(
-      widget.cityName,
-      Intl.shortLocale(Intl.systemLocale),
-    );
+    if (widget.lat != 0 && widget.lon != 0)
+      tempbloc.getTemperatureFormMap(
+        widget.lat,
+        widget.lon,
+        Intl.shortLocale(Intl.systemLocale),
+      );
+    else
+      tempbloc.getTemperatureNow(
+        widget.cityName,
+        Intl.shortLocale(Intl.systemLocale),
+      );
   }
 
   @override
@@ -287,9 +301,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(LocalizationKeys.wait,
-                                style: GoogleFonts.comfortaa(fontSize: 24))
-                            .tr(),
+                        Text(
+                          LocalizationKeys.wait,
+                          style: GoogleFonts.comfortaa(fontSize: 24),
+                        ),
                         CircularProgressIndicator(),
                       ],
                     ),

@@ -53,6 +53,8 @@ class LocalizationKeys {
 
   static String search = 'search'.tr();
 
+  static String map = 'map'.tr();
+
   static String settings = 'settings'.tr();
 
   static String enterCity = 'enter city'.tr();
@@ -88,4 +90,10 @@ class LocalizationKeys {
   static String wait = 'wait'.tr();
 
   static String yourLocation = 'ur location'.tr();
+
+  static String weatherMap = 'weather map'.tr();
+
+  static String getWeather = 'get weather'.tr();
+
+  static String locationFromMap = 'location map'.tr();
 }
